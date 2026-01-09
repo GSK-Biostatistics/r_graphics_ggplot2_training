@@ -5,8 +5,8 @@ project:
 book:
   title: "R Graphics with ggplot2"
   author: "Andy Nicholls"
-  date: 2024-07-12
-  repo-url: https://github.com/gsk-tech/r_graphics_ggplot2_training
+  date: 2026-01-09
+  repo-url: https://github.com/GSK-Biostatistics/r_graphics_ggplot2_training/
   repo-actions: [none]
   chapters:
     - index.qmd
@@ -20,7 +20,6 @@ book:
     - 08_themes_and_styling.qmd
     - 09_quick_plots.qmd
     - 10_utilities.qmd
-    - 11_harp.qmd  
 
 toc: true
 toc-location: left
@@ -37,11 +36,9 @@ format:
     code-fold: false
     code-summary: "Show More"
     smooth-scroll: true
+    include-after-body: global-footnote.md
 
 sidebar: 
   logo: images/The_Signal.png
     
 title-block-banner: true
-
-params:
-  who: gsk

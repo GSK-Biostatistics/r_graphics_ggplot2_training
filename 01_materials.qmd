@@ -1,37 +1,44 @@
 # Course Materials
 
-These materials have been written such that you should be able to follow along without the aid of an instructor. You need to use a **non-frozen** environment to be able to install the training packages. This would be the default environment in both Domino and WARP, but here's some additional notes if needed.
+These materials have been written such that you should be able to follow along without the aid of an instructor.
 
--   In Domino, this means starting a project and choosing "5.x Domino Standard Environment" or "Multilingual R4.x" and choosing "RStudio" as your IDE.
+## Getting Started
 
--   In WARP, just ensure the R version selected i.e. R 4.4.1 doesn't have "Frozen" next to it.
+To follow along with the exercises, you will need to download the course datasets and script to your local RStudio.
 
-To follow the examples and attempt the course exercises you will need the data and course script.
+::: callout-tip
+In the code below, change `"/path/to/your/folder"` to the actual location on your computer where you want to save your work (e.g., `"~/ggplot2_Training"`).
+:::
 
-In Domino you should first create a new Domino project, called something like "R Training" which doesn't need to be connected to GitHub in any way. 
-Then launch a workspace as described above in this new project you've just created.
+```{r, eval=FALSE}
+# 1. Install and load helper packages
+install.packages("httr")
+install.packages("jsonlite")
 
-To get the data you will need to install the `gskRtraining` package and then run the `setup_training()` function. After running the `setup_training()` function a new directory/project will be created called `gsk_R_training` in your home directory, or in the `/mnt/code/` folder if you're working in Domino. The folder will contain the data and course scripts. For this course, you will use the `ggplot2.R` script.
+library(httr)
+library(jsonlite)
 
-```{r,eval = FALSE}
- 
-# For systems using Posit Package Manager
-install.packages("gskRtraining")
-library("gskRtraining")
-setup_training()
+# 2. Copy the `download` function from GitHub into your environment
+source("https://raw.githubusercontent.com/GSK-Biostatistics/r_graphics_ggplot2_training/main/download_data.R")
+
+# 3. Run the function to get your data
+download_data(
+  owner    = "GSK-Biostatistics",
+  repo     = "r_graphics_ggplot2_training",
+  path     = "data",
+  dest_dir = "/path/to/your/folder" # <--- EDIT THIS PATH 
+)
+
 ```
 
-The new folder should look like this: <img src="./img/new_course_data.PNG" class="border"/>
+After running this code a new folder will be created called `data` in your chosen location. The folder will contain the data and course script. The script for this course is called `full_script.R`. This script contains a copy of all of the code from the grey boxes within these materials, as well as the answers to the exercises (note that these are commented out but should run if un-commented).
 
-or in Domino like this:
-<img src="./img/domino_folder.PNG" class="border"/>
+The new folder should look like this:
+
+![](images/new_course_data.PNG)
 
 ## Initialising the Course 'Project'
 
-Now you have copied the materials, please open the newly created `gsk_R_training` directory (folder) and click on the RStudio project file (`gsk_R_training.Rproj`) to open the project. This ensures all the relative paths work as expected.
+Now you have downloaded the materials, open the folder you created with the data saved in it and click on the RStudio project file (`r_graphics_ggplot2_training.Rproj`) to start a new project. This ensures all the relative paths work as expected. We will briefly discuss further benefits of RStudio Projects later in the course.
 
-<img src="./img/open_proj.png" class="border"/>
-
-Now you should be able to see that the current project in the top right corner is called `gsk_R_training`.
-
-<img src="./img/project.png" class="border"/>
+![](images/open_proj.png)
