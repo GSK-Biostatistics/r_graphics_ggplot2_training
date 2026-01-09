@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Aesthetics and Groups – R Graphics with ggplot2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./06_graph_types.html" rel="next">
+<link href="./04_layering.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d7e60ccc6010cbaa0fefba96fe0ae476.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05_aesthetics.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Aesthetics and Groups</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Aesthetics and Groups</span></h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R Graphics with ggplot2</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/GSK-Biostatistics/r_graphics_ggplot2_training/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome!</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_materials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Course Materials</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_recap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Recap</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_principles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Principles</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_layering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Layering</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_aesthetics.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Aesthetics and Groups</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_graph_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Graph Types: Geoms</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_panelling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Panelling: Faceting</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_themes_and_styling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Themes and Styling</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_quick_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Shortcuts and Quick Plots</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10_utilities.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Utilities</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#using-aesthetics" id="toc-using-aesthetics" class="nav-link active" data-scroll-target="#using-aesthetics"><span class="header-section-number">5.1</span> Using Aesthetics</a></li>
+  <li><a href="#defining-custom-mappings" id="toc-defining-custom-mappings" class="nav-link" data-scroll-target="#defining-custom-mappings"><span class="header-section-number">5.2</span> Defining Custom Mappings</a>
+  <ul class="collapse">
+  <li><a href="#applying-scales" id="toc-applying-scales" class="nav-link" data-scroll-target="#applying-scales"><span class="header-section-number">5.2.1</span> Applying Scales</a></li>
+  <li><a href="#changing-the-scale" id="toc-changing-the-scale" class="nav-link" data-scroll-target="#changing-the-scale"><span class="header-section-number">5.2.2</span> Changing the Scale</a></li>
+  </ul></li>
+  <li><a href="#aesthetics-that-dont-depend-on-a-variable" id="toc-aesthetics-that-dont-depend-on-a-variable" class="nav-link" data-scroll-target="#aesthetics-that-dont-depend-on-a-variable"><span class="header-section-number">5.3</span> Aesthetics that Don’t Depend on a Variable</a></li>
+  <li><a href="#available-aesthetics" id="toc-available-aesthetics" class="nav-link" data-scroll-target="#available-aesthetics"><span class="header-section-number">5.4</span> Available Aesthetics</a>
+  <ul class="collapse">
+  <li><a href="#colours" id="toc-colours" class="nav-link" data-scroll-target="#colours"><span class="header-section-number">5.4.1</span> Colours</a></li>
+  <li><a href="#shapes" id="toc-shapes" class="nav-link" data-scroll-target="#shapes"><span class="header-section-number">5.4.2</span> Shapes</a></li>
+  <li><a href="#line-types" id="toc-line-types" class="nav-link" data-scroll-target="#line-types"><span class="header-section-number">5.4.3</span> Line Types</a></li>
+  </ul></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="header-section-number">5.5</span> EXERCISE</a></li>
+  <li><a href="#groups" id="toc-groups" class="nav-link" data-scroll-target="#groups"><span class="header-section-number">5.6</span> Groups</a></li>
+  <li><a href="#exercise-1" id="toc-exercise-1" class="nav-link" data-scroll-target="#exercise-1"><span class="header-section-number">5.7</span> EXERCISE</a></li>
+  </ul>
+<div class="toc-actions"><ul></ul></div></nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="using-aesthetics" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="using-aesthetics"><span class="header-section-number">5.1</span> Using Aesthetics</h2>
+<p>The power of ggplot2 comes from the ease with which we can map features of our data (i.e.&nbsp;information contained within variables) onto plot elements. As discussed in the previous section variables can be mapped onto any of the following elements:</p>
+<ul>
+<li>x</li>
+<li>y</li>
+<li>colour / color</li>
+<li>alpha (transparency)</li>
+<li>fill (colour for shaded areas)</li>
+<li>shape</li>
+<li>size</li>
+<li>linetype</li>
+<li>linewidth</li>
+</ul>
+<p>Aesthetic mappings are easy to make and ggplot2 has a number of built-in defaults to handle different data types. <strong>Most aesthetics work with either continuous or categorical data. Some, eg <code>shape</code> only work with categorical data.</strong> To make an aesthetic mapping we call the <code>aes</code> function. Each of the mappings above can be defined as arguments to the function. Variables in the data act as inputs. Here’s an example using some infamous theophylline data.</p>
+<p>Note the use of <code>factor</code>. This turns <code>SUBJID</code> from a continuous into a categorical variable. It is required to ensure that we get a distinct colour for each, instead of gradation. It also ensures that each subject is plotted as a different line.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> theoph,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> TIME, <span class="at">y =</span> CONC, <span class="at">colour =</span> <span class="fu">factor</span>(SUBJID))) <span class="sc">+</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/aesthetics-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And here’s a nice example using multiple aesthetics with the in-built dataset, quakes.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">lat</th>
+<th style="text-align: right;">long</th>
+<th style="text-align: right;">depth</th>
+<th style="text-align: right;">mag</th>
+<th style="text-align: right;">stations</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">-20.42</td>
+<td style="text-align: right;">181.62</td>
+<td style="text-align: right;">562</td>
+<td style="text-align: right;">4.8</td>
+<td style="text-align: right;">41</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-20.62</td>
+<td style="text-align: right;">181.03</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">4.2</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-26.00</td>
+<td style="text-align: right;">184.10</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">5.4</td>
+<td style="text-align: right;">43</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-17.97</td>
+<td style="text-align: right;">181.66</td>
+<td style="text-align: right;">626</td>
+<td style="text-align: right;">4.1</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-20.42</td>
+<td style="text-align: right;">181.96</td>
+<td style="text-align: right;">649</td>
+<td style="text-align: right;">4.0</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-19.68</td>
+<td style="text-align: right;">184.31</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">4.0</td>
+<td style="text-align: right;">12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> quakes,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">alpha =</span> <span class="sc">-</span>depth, <span class="at">colour =</span> stations, <span class="at">size =</span> mag)) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/quakes_plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="defining-custom-mappings" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="defining-custom-mappings"><span class="header-section-number">5.2</span> Defining Custom Mappings</h2>
+<p>In order to change the default aesthetic mappings, we need to add a <code>scale_*</code> layer. The scale layers control</p>
+<ol type="1">
+<li>How the data points are mapped to the specified aesthetic</li>
+<li>How that mapping is displayed in the axis/legend</li>
+</ol>
+<p>There are many different scale layers available:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "scale_alpha"                "scale_alpha_binned"        
+  [3] "scale_alpha_continuous"     "scale_alpha_date"          
+  [5] "scale_alpha_datetime"       "scale_alpha_discrete"      
+  [7] "scale_alpha_identity"       "scale_alpha_manual"        
+  [9] "scale_alpha_ordinal"        "scale_color_binned"        
+ [11] "scale_color_brewer"         "scale_color_continuous"    
+ [13] "scale_color_date"           "scale_color_datetime"      
+ [15] "scale_color_discrete"       "scale_color_distiller"     
+ [17] "scale_color_fermenter"      "scale_color_gradient"      
+ [19] "scale_color_gradient2"      "scale_color_gradientn"     
+ [21] "scale_color_grey"           "scale_color_hue"           
+ [23] "scale_color_identity"       "scale_color_manual"        
+ [25] "scale_color_ordinal"        "scale_color_steps"         
+ [27] "scale_color_steps2"         "scale_color_stepsn"        
+ [29] "scale_color_viridis_b"      "scale_color_viridis_c"     
+ [31] "scale_color_viridis_d"      "scale_colour_binned"       
+ [33] "scale_colour_brewer"        "scale_colour_continuous"   
+ [35] "scale_colour_date"          "scale_colour_datetime"     
+ [37] "scale_colour_discrete"      "scale_colour_distiller"    
+ [39] "scale_colour_fermenter"     "scale_colour_gradient"     
+ [41] "scale_colour_gradient2"     "scale_colour_gradientn"    
+ [43] "scale_colour_grey"          "scale_colour_hue"          
+ [45] "scale_colour_identity"      "scale_colour_manual"       
+ [47] "scale_colour_ordinal"       "scale_colour_steps"        
+ [49] "scale_colour_steps2"        "scale_colour_stepsn"       
+ [51] "scale_colour_viridis_b"     "scale_colour_viridis_c"    
+ [53] "scale_colour_viridis_d"     "scale_continuous_identity" 
+ [55] "scale_discrete_identity"    "scale_discrete_manual"     
+ [57] "scale_fill_binned"          "scale_fill_brewer"         
+ [59] "scale_fill_continuous"      "scale_fill_date"           
+ [61] "scale_fill_datetime"        "scale_fill_discrete"       
+ [63] "scale_fill_distiller"       "scale_fill_fermenter"      
+ [65] "scale_fill_gradient"        "scale_fill_gradient2"      
+ [67] "scale_fill_gradientn"       "scale_fill_grey"           
+ [69] "scale_fill_hue"             "scale_fill_identity"       
+ [71] "scale_fill_manual"          "scale_fill_ordinal"        
+ [73] "scale_fill_steps"           "scale_fill_steps2"         
+ [75] "scale_fill_stepsn"          "scale_fill_viridis_b"      
+ [77] "scale_fill_viridis_c"       "scale_fill_viridis_d"      
+ [79] "scale_linetype"             "scale_linetype_binned"     
+ [81] "scale_linetype_continuous"  "scale_linetype_discrete"   
+ [83] "scale_linetype_identity"    "scale_linetype_manual"     
+ [85] "scale_linewidth"            "scale_linewidth_binned"    
+ [87] "scale_linewidth_continuous" "scale_linewidth_date"      
+ [89] "scale_linewidth_datetime"   "scale_linewidth_discrete"  
+ [91] "scale_linewidth_identity"   "scale_linewidth_manual"    
+ [93] "scale_linewidth_ordinal"    "scale_radius"              
+ [95] "scale_shape"                "scale_shape_binned"        
+ [97] "scale_shape_continuous"     "scale_shape_discrete"      
+ [99] "scale_shape_identity"       "scale_shape_manual"        
+[101] "scale_shape_ordinal"        "scale_size"                
+[103] "scale_size_area"            "scale_size_binned"         
+[105] "scale_size_binned_area"     "scale_size_continuous"     
+[107] "scale_size_date"            "scale_size_datetime"       
+[109] "scale_size_discrete"        "scale_size_identity"       
+[111] "scale_size_manual"          "scale_size_ordinal"        
+[113] "scale_type"                 "scale_x_binned"            
+[115] "scale_x_continuous"         "scale_x_date"              
+[117] "scale_x_datetime"           "scale_x_discrete"          
+[119] "scale_x_log10"              "scale_x_reverse"           
+[121] "scale_x_sqrt"               "scale_x_time"              
+[123] "scale_y_binned"             "scale_y_continuous"        
+[125] "scale_y_date"               "scale_y_datetime"          
+[127] "scale_y_discrete"           "scale_y_log10"             
+[129] "scale_y_reverse"            "scale_y_sqrt"              
+[131] "scale_y_time"              </code></pre>
+</div>
+</div>
+<section id="applying-scales" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="applying-scales"><span class="header-section-number">5.2.1</span> Applying Scales</h3>
+<p>The scale functions can be broken down into three components:</p>
+<ol type="1">
+<li><strong>The <code>scale_</code> piece</strong> - that identifies the function as a scale function</li>
+<li><strong>The aesthetic</strong> - to which we have mapped a variable</li>
+<li><strong>An appropriate scale</strong> - these are either discrete or continuous and <strong>must</strong> match the data type.</li>
+</ol>
+<p>Every time we map to an aesthetic, a default scale is applied. Which one depends on the data type. For example, if we colour by treatment (which is discrete) <code>scale_colour_discrete</code> is applied. As an alternative we could use <code>scale_colour_hue</code>.</p>
+<p>Each of the scales has a number of built in options which enable control over the name, limits and break points as they are displayed in the legend or axis (remember that x and y are aesthetic mappings in ggplot2).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a plot</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bar_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> dm,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">aes</span>(<span class="at">x =</span> ARM, <span class="at">fill =</span> SEX)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="co"># As opposed to the default, "stack"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Without applying a scale</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>bar_plot</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply a scale to change the default colours</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>bar_plot <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="st">"Sex"</span>) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="st">"Treatment"</span>) <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Number of Subjects"</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">14</span>, <span class="at">by =</span> <span class="dv">2</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/scale_applying_run-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="changing-the-scale" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="changing-the-scale"><span class="header-section-number">5.2.2</span> Changing the Scale</h3>
+<p>As long as the data type is appropriate we can simply swap one scale for another. This allows us to swap in a manual scale for a discrete one.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply a manual colour scale </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>bar_plot <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="st">"Sex"</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"navy"</span>, <span class="st">"darkgreen"</span>)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="st">"Treatment"</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Number of Subjects"</span>, <span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="aesthetics-that-dont-depend-on-a-variable" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="aesthetics-that-dont-depend-on-a-variable"><span class="header-section-number">5.3</span> Aesthetics that Don’t Depend on a Variable</h2>
+<p>The aesthetics provide a simple framework for visualising data but sometimes we just want to colour everything in blue! In order to make aesthetic changes that don’t depend on variables we make the change in the corresponding geom layer. For example, if we wanted blue lines then we would add <code>colour = "blue"</code> to a <code>geom_line</code> layer. Note that when we’re not working with variables, we no longer need the <code>aes</code> function. Here’s an example:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> vs,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> WEIGHT)) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">"tan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/custom-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="available-aesthetics" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="available-aesthetics"><span class="header-section-number">5.4</span> Available Aesthetics</h2>
+<p>This section serves as a quick reference for aesthetic options available in R.</p>
+<section id="colours" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="colours"><span class="header-section-number">5.4.1</span> Colours</h3>
+<p>R has many (657) built-in named colours. These can be found by calling the colours function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First 20 colours</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colours</span>()[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "white"         "aliceblue"     "antiquewhite"  "antiquewhite1"
+ [5] "antiquewhite2" "antiquewhite3" "antiquewhite4" "aquamarine"   
+ [9] "aquamarine1"   "aquamarine2"   "aquamarine3"   "aquamarine4"  
+[13] "azure"         "azure1"        "azure2"        "azure3"       
+[17] "azure4"        "beige"         "bisque"        "bisque1"      </code></pre>
+</div>
+</div>
+<p>It is possible to create any colour we like using “hex” (aka HTML) colour notation. The easiest way to create a hex code is to use the <code>rgb</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify red, green and blue as a proportion</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>my_col <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="fl">0.7</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify red, green and blue on a standard 0 to 255 range</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>my_col <span class="ot">&lt;-</span> <span class="fu">rgb</span>(<span class="dv">26</span>, <span class="dv">230</span>, <span class="dv">179</span>, <span class="at">maxColorValue=</span><span class="dv">255</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw a histogram</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> vs,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> WEIGHT)) <span class="sc">+</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">10</span>, <span class="at">fill =</span> my_col)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/rgb-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The <code>rgb</code> function can also be used to add transparency via the <code>alpha</code> argument.</p>
+</section>
+<section id="shapes" class="level3" data-number="5.4.2">
+<h3 data-number="5.4.2" class="anchored" data-anchor-id="shapes"><span class="header-section-number">5.4.2</span> Shapes</h3>
+<p>R has a number of inbuilt shapes to choose from, as shown by the following graphic.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/shapes-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Shapes 21 to 25 are special symbols which have an inner <code>fill</code> aesthetic as well as the outer colour. We can also define our own shapes using quotes, eg <code>shape = "$"</code>.</p>
+</section>
+<section id="line-types" class="level3" data-number="5.4.3">
+<h3 data-number="5.4.3" class="anchored" data-anchor-id="line-types"><span class="header-section-number">5.4.3</span> Line Types</h3>
+<p>R also has a selected number of dotted and dashed lines to choose from.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/linetypes-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="exercise" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="exercise"><span class="header-section-number">5.5</span> EXERCISE</h2>
+<ol type="1">
+<li>Create a scatter plot of Change from baseline in ACT Total Score at Week 24 against the baseline ACT score
+<ol type="a">
+<li>Vary the colour by treatment</li>
+<li>Vary the shape of the point in order to highlight the Week 24 responders</li>
+</ol></li>
+<li>Create a histogram of ages from the demography data (<code>dm</code>) coloured in hotpink. <em>HINT: use the binwidth argument to control the width of the bins</em></li>
+<li>Create a scatter plot of Change from baseline in ACT Total Score at Week 24 against baseline. Vary the colour by treatment and double the default size of the points</li>
+<li>Create a scatter plot of Change from baseline in ACT Total Score at Week 24 against baseline. Colour records for subjects who were on the GSK drug orange and colour everything else <code>navy</code> blue</li>
+<li>Create a line plot of the concentration values in the theophylline (<code>theoph</code>) data over time. Colour by SUBJID.
+<ol type="a">
+<li>Only show time values from 4 hours onwards</li>
+<li>Convert the y axis to a log scale and label concentrations from 1 to 10</li>
+</ol></li>
+</ol>
+<p><strong>Extra</strong></p>
+<ol start="6" type="1">
+<li>Create a bar plot of the number of subjects at each visit (inc. Screening and EW) by treatment
+<ol type="a">
+<li>Label the y-axis appropriately</li>
+<li>Scale the x-axis so that only Baseline to Week 24 visits are shown and label the axis appropriately</li>
+<li>Label the legend appropriately</li>
+</ol></li>
+</ol>
+</section>
+<section id="groups" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="groups"><span class="header-section-number">5.6</span> Groups</h2>
+<p>We introduced the concept of aesthetics by creating a PK profile plot using some theophylline data. In the plot we coloured by subject, but what if we weren’t interested in knowing which subject was which? We could turn off the legend using the <code>guide = "none"</code> option for <code>scale_colour_discrete</code>. But what if we didn’t want different colours at all? For that we have the <code>group</code> option. To see why this is needed, compare the following two graphics, with and without grouping.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No grouping</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> theoph,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> TIME, <span class="at">y =</span> CONC)) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"No Grouping"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Grouping</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> theoph,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> TIME, <span class="at">y =</span> CONC, <span class="at">group =</span> SUBJID)) <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Grouping"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/grouping_run-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As well as path/line plots the <code>group</code> option is also useful when working with maps where we need to plot boundaries. Here’s a slightly more verbose example plotting states in the USA.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get some data (map of USA with state boundaries) from the map package</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(maps)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"state"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(states)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data - this data has a "group" variable which enables the </span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># addition of state boundaries.</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(states,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(long, lat, <span class="at">group =</span> group, <span class="at">fill =</span> region)) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_polygon</span>(<span class="at">colour =</span> <span class="st">"black"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>       long      lat group order  region subregion
+1 -87.46201 30.38968     1     1 alabama      &lt;NA&gt;
+2 -87.48493 30.37249     1     2 alabama      &lt;NA&gt;
+3 -87.52503 30.37249     1     3 alabama      &lt;NA&gt;
+4 -87.53076 30.33239     1     4 alabama      &lt;NA&gt;
+5 -87.57087 30.32665     1     5 alabama      &lt;NA&gt;
+6 -87.58806 30.32665     1     6 alabama      &lt;NA&gt;</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_aesthetics_files/figure-html/maps_notshown-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-1" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="exercise-1"><span class="header-section-number">5.7</span> EXERCISE</h2>
+<ol type="1">
+<li>Create time profiles for the ACT Total Score each of the subjects in <code>act_full</code> and colour by treatment.</li>
+</ol>
+<p><strong>Extra</strong></p>
+<ol start="2" type="1">
+<li>GSK is running an RCT in the US states of New York, New Jersey, North Carolina, Florida and California. Demonstrate the relative coverage of USA by drawing a map of the country and colouring these states in dark green. <em>HINT: Use the if_else and %in% functions to create a flag in the states data</em></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<div class="global-footnote">
+
+If you notice an issue, have suggestions for improvements, or want to view the source code, you can find it on <a href="https://github.com/GSK-Biostatistics/r_graphics_ggplot2_training" target="_blank">GitHub</a>.
+
+</div>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./04_layering.html" class="pagination-link" aria-label="Layering">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Layering</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./06_graph_types.html" class="pagination-link" aria-label="Graph Types: Geoms">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Graph Types: Geoms</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul></ul></div></div></div></footer><script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

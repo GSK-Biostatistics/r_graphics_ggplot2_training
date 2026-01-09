@@ -1,0 +1,532 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "R Graphics with ggplot2",
+    "section": "",
+    "text": "Welcome!\nTo the Introduction to the R Graphics with ggplot2 training.",
+    "crumbs": [
+      "Welcome!"
+    ]
+  },
+  {
+    "objectID": "01_materials.html",
+    "href": "01_materials.html",
+    "title": "1  Course Materials",
+    "section": "",
+    "text": "1.1 Getting Started\nThese materials have been written such that you should be able to follow along without the aid of an instructor.\nTo follow along with the exercises, you will need to download the course datasets and script to your local RStudio.\n# 1. Install and load helper packages\ninstall.packages(\"httr\")\ninstall.packages(\"jsonlite\")\n\nlibrary(httr)\nlibrary(jsonlite)\n\n# 2. Copy the `download` function from GitHub into your environment\nsource(\"https://raw.githubusercontent.com/GSK-Biostatistics/r_graphics_ggplot2_training/main/download_data.R\")\n\n# 3. Run the function to get your data\ndownload_data(\n  owner    = \"GSK-Biostatistics\",\n  repo     = \"r_graphics_ggplot2_training\",\n  path     = \"data\",\n  dest_dir = \"/path/to/your/folder\" # &lt;--- EDIT THIS PATH \n)\nAfter running this code a new folder will be created called data in your chosen location. The folder will contain the data and course script. The script for this course is called full_script.R. This script contains a copy of all of the code from the grey boxes within these materials, as well as the answers to the exercises (note that these are commented out but should run if un-commented).\nThe new folder should look like this:",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Course Materials</span>"
+    ]
+  },
+  {
+    "objectID": "01_materials.html#getting-started",
+    "href": "01_materials.html#getting-started",
+    "title": "1  Course Materials",
+    "section": "",
+    "text": "Tip\n\n\n\nIn the code below, change \"/path/to/your/folder\" to the actual location on your computer where you want to save your work (e.g., \"~/ggplot2_Training\").",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Course Materials</span>"
+    ]
+  },
+  {
+    "objectID": "01_materials.html#initialising-the-course-project",
+    "href": "01_materials.html#initialising-the-course-project",
+    "title": "1  Course Materials",
+    "section": "1.2 Initialising the Course ‘Project’",
+    "text": "1.2 Initialising the Course ‘Project’\nNow you have downloaded the materials, open the folder you created with the data saved in it and click on the RStudio project file (r_graphics_ggplot2_training.Rproj) to start a new project. This ensures all the relative paths work as expected. We will briefly discuss further benefits of RStudio Projects later in the course.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Course Materials</span>"
+    ]
+  },
+  {
+    "objectID": "02_recap.html",
+    "href": "02_recap.html",
+    "title": "2  Recap",
+    "section": "",
+    "text": "2.1 Pre-requisites\nIf you have never used R you should not be on this course!",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Recap</span>"
+    ]
+  },
+  {
+    "objectID": "02_recap.html#pre-requisites",
+    "href": "02_recap.html#pre-requisites",
+    "title": "2  Recap",
+    "section": "",
+    "text": "This course assumes a working level of R.\nIdeally you should have attended “Introduction to R and the tidyverse” or an equivalent R course prior to taking this course",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Recap</span>"
+    ]
+  },
+  {
+    "objectID": "02_recap.html#things-you-should-know-about",
+    "href": "02_recap.html#things-you-should-know-about",
+    "title": "2  Recap",
+    "section": "2.2 Things you should know about",
+    "text": "2.2 Things you should know about\nIt is assumed that you are familiar with the following\n\nVectors\nData frames\nImporting and exporting data\nUsage of functions for summarising / aggregating data (mean, sd etc)",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Recap</span>"
+    ]
+  },
+  {
+    "objectID": "02_recap.html#the-magrittr-pipe",
+    "href": "02_recap.html#the-magrittr-pipe",
+    "title": "2  Recap",
+    "section": "2.3 The magrittr Pipe",
+    "text": "2.3 The magrittr Pipe\nIf you’ve not used R recently then you probably haven’t come across the magrittr pipe, %&gt;%. R programming has changed a lot and the pipe is now very common. The pipe is essentially an alternative to nesting that allows functions to be chained together: the output of one function becomes the first input of the next.\nTo see how it works we will use some theophylline data. The aim here is to extract baseline concentration values for each subject. We will use filter and select. Without the pipe there are two ways we might do this.\n\n&gt; # tidyverse loads the dplyr package for filter and select (and the pipe)\n&gt; library(tidyverse) \n&gt; # Start with the theoph data\n&gt; head(theoph)\n\n# A tibble: 6 × 5\n  SUBJID    WT  DOSE  TIME  CONC\n   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;\n1      1  79.6  4.02  0     0.74\n2      1  79.6  4.02  0.25  2.84\n3      1  79.6  4.02  0.57  6.57\n4      1  79.6  4.02  1.12 10.5 \n5      1  79.6  4.02  2.02  9.66\n6      1  79.6  4.02  3.82  8.58\n\n&gt; # Method 1: nesting (this is horrible)\n&gt; bl_conc &lt;- select(filter(theoph, TIME == 0), SUBJID, CONC)\n&gt; \n&gt; # Method 2: traditional stepwise approach\n&gt; # (better, but leaves us with an object, bl_rows, that we may not want)\n&gt; bl_rows &lt;- filter(theoph, TIME == 0)\n&gt; bl_conc &lt;- select(bl_rows, SUBJID, CONC)\n&gt; \n&gt; # Now let's look at the data\n&gt; head(bl_conc)\n\n# A tibble: 6 × 2\n  SUBJID  CONC\n   &lt;dbl&gt; &lt;dbl&gt;\n1      1  0.74\n2      2  0   \n3      3  0   \n4      4  0   \n5      5  0   \n6      6  0   \n\n\nThe magrittr pipe provides a more readable syntax, similar to method 2 but avoids the intermediary dataset.\n\n&gt; bl_conc &lt;- theoph %&gt;%      # Take the theoph data, then ...\n+   filter(TIME == 0) %&gt;%   # ... filter the rows, then ... \n+   select(SUBJID, CONC)    # ... select columns\n&gt; \n&gt; # Now let's look at the data\n&gt; bl_conc %&gt;% head\n\n# A tibble: 6 × 2\n  SUBJID  CONC\n   &lt;dbl&gt; &lt;dbl&gt;\n1      1  0.74\n2      2  0   \n3      3  0   \n4      4  0   \n5      5  0   \n6      6  0",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Recap</span>"
+    ]
+  },
+  {
+    "objectID": "03_principles.html",
+    "href": "03_principles.html",
+    "title": "3  Principles",
+    "section": "",
+    "text": "3.1 Background and Reading\nThe ggplot2 package is Hadley Wickham’s implementation of Leland Wilkinson’s The Grammar of Graphics book. Hadley Wickham initially produced a white paper explaining his interpretation and implementation in R, A Layered Grammar of Graphics. Since then Hadley has published (and re-published) his own book, ggplot2: Elegant Graphics for Data Analysis.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Principles</span>"
+    ]
+  },
+  {
+    "objectID": "03_principles.html#key-principles-of-a-layered-grammar-of-graphics",
+    "href": "03_principles.html#key-principles-of-a-layered-grammar-of-graphics",
+    "title": "3  Principles",
+    "section": "3.2 Key Principles of A Layered Grammar of Graphics",
+    "text": "3.2 Key Principles of A Layered Grammar of Graphics\nWe don’t need to read any of the above in order to be able to use ggplot2 but a basic understanding of the principles can help our understanding. We will loosely cover these principles throughout the course but the first key concept is that data are structured such that each variable is a column and each row is an observation. Today, Hadley Wickham refers to this as “tidy” data.\nThe second key concept is a little less straightforward to understand. This is the concept of layered graphics. The idea is that a plot is made up of various layers. Each layer describes how various features of the plot are to be drawn. One of the most important layers is the mapping of data to what Hadley describes as the aesthetics. Under Hadley’s definition, aesthetics refer not only to colour, shape and size but also the x and y coordinates. Additional layers such as the geom[etric] layers control how these aesthetics are presented (for example what type of plot is actually drawn).\n\n3.2.1 Aesthetic Mappings Example\nConsider a plot of drug concentrations over time, we map concentration to the y-axis and time to the x-axis. This is the same mapping, regardless of whether we draw a scatter plot or a line plot (or even box plots at each time point). The mapping of ‘concentration’ to ‘y’ and ‘time’ to ‘x’ is an aesthetic mapping. Other aesthetic mappings might involve mapping a variable, such as the drug dose or subject, to colour or line type. The type of plot (point or line) is controlled separately via a geometric layer. Let’s see that in practice using an example similar to that in Hadley’s original paper.\nThe tables and code below provide a visual representation of a possible mapping of some fabricated PK data. The first table shows the original data.\n\npk &lt;- tibble(SUBJID = as.character(rep(1:2, each = 5)),\n             TIME = rep(c(0, 1, 6, 12, 24), 2), \n             CONC = c(0, 10, 7, 6, 3, 0, 8, 6, 3, 1))\n\n\n\n\n\n\nSUBJID\nTIME\nCONC\n\n\n\n\n1\n0\n0\n\n\n1\n1\n10\n\n\n1\n6\n7\n\n\n1\n12\n6\n\n\n1\n24\n3\n\n\n2\n0\n0\n\n\n2\n1\n8\n\n\n2\n6\n6\n\n\n2\n12\n3\n\n\n2\n24\n1\n\n\n\n\n\nWe map variables to aesthetics as follows:\n\n\n\n\n\ncolour\nx\ny\n\n\n\n\nred\n0\n0\n\n\nred\n1\n10\n\n\nred\n6\n7\n\n\nred\n12\n6\n\n\nred\n24\n3\n\n\nblue\n0\n0\n\n\nblue\n1\n8\n\n\nblue\n6\n6\n\n\nblue\n12\n3\n\n\nblue\n24\n1\n\n\n\n\n\nHaving defined our mapping, we can create various different plot types.\n\n\n\n\n\n\n\n\n\nLater on in the course we will look at how the aesthetic mappings are controlled by scale and how we can modify our geometric mappings using statistical transformations, stats.\nOther key concepts discussed in the course are facets (panelled plots) and the coordinate system itself, coord.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Principles</span>"
+    ]
+  },
+  {
+    "objectID": "04_layering.html",
+    "href": "04_layering.html",
+    "title": "4  Layering",
+    "section": "",
+    "text": "4.1 Calling the ggplot function\nIn this course we start by building ggplot2 graphics from scratch using the ggplot function. This will help us understand the general ggplot framework and the concept of layering. Later we will see how the qplot can be used to create “quick” plots for data exploration.\nFor the time being all of the plots that we create will begin with a call to the ggplot function. In the current iteration of ggplot2, calling this function with no arguments simply returns a blank plot.\nlibrary(ggplot2) # Or `library(tidyverse)` for full tidyverse functionality\nggplot() # Note that the function is named \"ggplot\" and not \"ggplot2\"",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Layering</span>"
+    ]
+  },
+  {
+    "objectID": "04_layering.html#data-mapping-aesthetics",
+    "href": "04_layering.html#data-mapping-aesthetics",
+    "title": "4  Layering",
+    "section": "4.2 Data Mapping: Aesthetics",
+    "text": "4.2 Data Mapping: Aesthetics\nThe ggplot framework is based upon the principle of building up a plot in layers. In order to turn our empty plot into something more interesting we must therefore add layers!\nLet’s start with the data. Columns in our data must be mapped to visual elements of the plot. These are known as ‘aesthetics’. Aesthetic elements of the plot include:\n\nx\ny\ncolour / color\nalpha (transparency)\nfill (colour for shaded areas)\nshape\nsize\nlinetype\nlinewidth\n\nTo begin with we define these mappings within the ggplot function. Later we will see how we can combine two or more different datasets by defining data mappings within other layers. The arguments are generally self-explanatory but note the use of the aes function in the following example.\n\nggplot(data = pk,\n       aes(x = TIME, y = CONC)) \n\nEvery time we define an aesthetic mapping of a variable (in any layer), the aes function must be used. This is a really important point, and something that a lot of ggplot2 users don’t fully understand so let’s state it again.\n\nEvery time we define an aesthetic mapping of a variable (in any layer), the aes function must be used.\n\nAnother important observation from the line above is that the data = part does not need to be wrapped in a call to aes. A good understanding of this key point will save a lot of time and effort debugging code in the future.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Layering</span>"
+    ]
+  },
+  {
+    "objectID": "04_layering.html#our-first-plot-adding-a-geom",
+    "href": "04_layering.html#our-first-plot-adding-a-geom",
+    "title": "4  Layering",
+    "section": "4.3 Our First Plot: Adding a ‘geom’",
+    "text": "4.3 Our First Plot: Adding a ‘geom’\nIn order to turn our data mappings into something interesting we must add a geometric layer, or ‘geom’. There are several geom’s available and we’ll look at some of these in more detail later. For now we start with a scatter plot. We can turn our data mapping into a scatter plot by adding a geom_point layer. Layers are literally added to the base plot using a +.\n\n# Extract subject 1's data\nsubj1 &lt;- pk %&gt;% filter(SUBJID == 1)\n\n# Plot subject 1's concentrations over time\nggplot(data = subj1,\n       aes(x = TIME, y = CONC)) +\n  geom_point()\n\n\n\n\n\n\n\n\nAny additional layers are added using the +. Layers can be added on a single line but by convention the + ends the line and the new layer is on the following line. It is not possible to start a line with a +.\nThere are many different graph types or ‘geoms’ built into ggplot2. Each starts with geom_. Common geoms include:\n\ngeom_point\ngeom_line\ngeom_text\ngeom_boxplot\ngeom_histogram\ngeom_bar\n\n\n# A line plot\nggplot(data = subj1,\n       aes(x = TIME, y = CONC)) +\n  geom_line()\n\n\n\n\n\n\n\n\nWe will look at geoms in more detail later on in the course.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Layering</span>"
+    ]
+  },
+  {
+    "objectID": "04_layering.html#adding-a-title",
+    "href": "04_layering.html#adding-a-title",
+    "title": "4  Layering",
+    "section": "4.4 Adding a Title",
+    "text": "4.4 Adding a Title\nThe ggtitle function can be added as a layer to out plot and allows us to add a main title and (in recent versions of ggplot2) a subtitle.\n\nggplot(data = subj1,\n       aes(x = TIME, y = CONC)) +\n  geom_line() +\n  ggtitle(\"Concentration over Time for Subject 1\",\n          subtitle = \"Using Simulated Data\")\n\n\n\n\n\n\n\n\nTitles are left-aligned by default but we will look at global theme/styling options later in the course.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Layering</span>"
+    ]
+  },
+  {
+    "objectID": "04_layering.html#exercise",
+    "href": "04_layering.html#exercise",
+    "title": "4  Layering",
+    "section": "4.5 EXERCISE",
+    "text": "4.5 EXERCISE\n\nSubset (filter) the efficacy data to contain only the three visits with FEV1 data (VISITNUM %in% c(20,40,60)). Use this to create a scatter plot of FEV1 by visit (VISITNUM).\n\nAdd a mapping of treatment (ARM) to ‘colour’ and redraw the plot.\n\nChange the plot type (geom) to a line plot and change the colour mapping to USUBJID\n\nAdd an appropriate title to the plot\n\nCreate a scatter plot of the Week 12 ACT Total Score against Baseline ACT Total Score using an appropriate subset of the efficacy data. Ensure that you add an appropriate title to the plot.\n\nChange the plot type from points to ‘jitter’ (geom_jitter) to reveal overlaid data points",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Layering</span>"
+    ]
+  },
+  {
+    "objectID": "04_layering.html#saving-graphics",
+    "href": "04_layering.html#saving-graphics",
+    "title": "4  Layering",
+    "section": "4.6 Saving Graphics",
+    "text": "4.6 Saving Graphics\nLike lattice graphics (xyplot, histogram, …), but unlike base R graphics (plot, hist), ggplot2 graphics are R objects. In simple terms this means that we can think of them as a recipe / list of instructions that tells R how to draw a graph. We can save our instructions by giving them a name and print the plot at any time (by typing the name). We can also modify/update our list at any time.\n\n# Create a plot called my_plot - nothing is printed at this point!\nmy_plot &lt;- ggplot(data = pk,\n                  aes(x = TIME, y = CONC, colour = SUBJID)) +\n  geom_line()\n\n# Print/plot the graph\nmy_plot # equivalent to `print(my_plot)`\n\n\n\n\n\n\n\n\nWe don’t have to save our graphics with a name but later we will see how useful this can be when publishing graphics to various formats.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Layering</span>"
+    ]
+  },
+  {
+    "objectID": "04_layering.html#modifying-graphics",
+    "href": "04_layering.html#modifying-graphics",
+    "title": "4  Layering",
+    "section": "4.7 Modifying Graphics",
+    "text": "4.7 Modifying Graphics\nIn the previous example we created a line plot of the PK example, which we saved as my_plot. Having saved the list of instructions for our plot we can easily update the list by adding new layers.\n\nmy_plot + geom_point(size = 4, shape = 'x')\n\n\n\n\n\n\n\n\nIt is important to note that the previous line simple printed my_plot with x’s at each point. It did not actually modify my_plot. As with other objects in R the object is only updated if we manually overwrite it.\n\n# Note the `my_plot &lt;- ` at the start\nmy_plot &lt;- my_plot + geom_point(size = 4, shape = 'x')",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Layering</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html",
+    "href": "05_aesthetics.html",
+    "title": "5  Aesthetics and Groups",
+    "section": "",
+    "text": "5.1 Using Aesthetics\nThe power of ggplot2 comes from the ease with which we can map features of our data (i.e. information contained within variables) onto plot elements. As discussed in the previous section variables can be mapped onto any of the following elements:\nAesthetic mappings are easy to make and ggplot2 has a number of built-in defaults to handle different data types. Most aesthetics work with either continuous or categorical data. Some, eg shape only work with categorical data. To make an aesthetic mapping we call the aes function. Each of the mappings above can be defined as arguments to the function. Variables in the data act as inputs. Here’s an example using some infamous theophylline data.\nNote the use of factor. This turns SUBJID from a continuous into a categorical variable. It is required to ensure that we get a distinct colour for each, instead of gradation. It also ensures that each subject is plotted as a different line.\nggplot(data = theoph,\n       aes(x = TIME, y = CONC, colour = factor(SUBJID))) +\n  geom_line()\nAnd here’s a nice example using multiple aesthetics with the in-built dataset, quakes.\nlat\nlong\ndepth\nmag\nstations\n\n\n\n\n-20.42\n181.62\n562\n4.8\n41\n\n\n-20.62\n181.03\n650\n4.2\n15\n\n\n-26.00\n184.10\n42\n5.4\n43\n\n\n-17.97\n181.66\n626\n4.1\n19\n\n\n-20.42\n181.96\n649\n4.0\n11\n\n\n-19.68\n184.31\n195\n4.0\n12\nggplot(data = quakes,\n       aes(x = long, y = lat, alpha = -depth, colour = stations, size = mag)) +\n  geom_point()",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html#using-aesthetics",
+    "href": "05_aesthetics.html#using-aesthetics",
+    "title": "5  Aesthetics and Groups",
+    "section": "",
+    "text": "x\ny\ncolour / color\nalpha (transparency)\nfill (colour for shaded areas)\nshape\nsize\nlinetype\nlinewidth",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html#defining-custom-mappings",
+    "href": "05_aesthetics.html#defining-custom-mappings",
+    "title": "5  Aesthetics and Groups",
+    "section": "5.2 Defining Custom Mappings",
+    "text": "5.2 Defining Custom Mappings\nIn order to change the default aesthetic mappings, we need to add a scale_* layer. The scale layers control\n\nHow the data points are mapped to the specified aesthetic\nHow that mapping is displayed in the axis/legend\n\nThere are many different scale layers available:\n\n\n  [1] \"scale_alpha\"                \"scale_alpha_binned\"        \n  [3] \"scale_alpha_continuous\"     \"scale_alpha_date\"          \n  [5] \"scale_alpha_datetime\"       \"scale_alpha_discrete\"      \n  [7] \"scale_alpha_identity\"       \"scale_alpha_manual\"        \n  [9] \"scale_alpha_ordinal\"        \"scale_color_binned\"        \n [11] \"scale_color_brewer\"         \"scale_color_continuous\"    \n [13] \"scale_color_date\"           \"scale_color_datetime\"      \n [15] \"scale_color_discrete\"       \"scale_color_distiller\"     \n [17] \"scale_color_fermenter\"      \"scale_color_gradient\"      \n [19] \"scale_color_gradient2\"      \"scale_color_gradientn\"     \n [21] \"scale_color_grey\"           \"scale_color_hue\"           \n [23] \"scale_color_identity\"       \"scale_color_manual\"        \n [25] \"scale_color_ordinal\"        \"scale_color_steps\"         \n [27] \"scale_color_steps2\"         \"scale_color_stepsn\"        \n [29] \"scale_color_viridis_b\"      \"scale_color_viridis_c\"     \n [31] \"scale_color_viridis_d\"      \"scale_colour_binned\"       \n [33] \"scale_colour_brewer\"        \"scale_colour_continuous\"   \n [35] \"scale_colour_date\"          \"scale_colour_datetime\"     \n [37] \"scale_colour_discrete\"      \"scale_colour_distiller\"    \n [39] \"scale_colour_fermenter\"     \"scale_colour_gradient\"     \n [41] \"scale_colour_gradient2\"     \"scale_colour_gradientn\"    \n [43] \"scale_colour_grey\"          \"scale_colour_hue\"          \n [45] \"scale_colour_identity\"      \"scale_colour_manual\"       \n [47] \"scale_colour_ordinal\"       \"scale_colour_steps\"        \n [49] \"scale_colour_steps2\"        \"scale_colour_stepsn\"       \n [51] \"scale_colour_viridis_b\"     \"scale_colour_viridis_c\"    \n [53] \"scale_colour_viridis_d\"     \"scale_continuous_identity\" \n [55] \"scale_discrete_identity\"    \"scale_discrete_manual\"     \n [57] \"scale_fill_binned\"          \"scale_fill_brewer\"         \n [59] \"scale_fill_continuous\"      \"scale_fill_date\"           \n [61] \"scale_fill_datetime\"        \"scale_fill_discrete\"       \n [63] \"scale_fill_distiller\"       \"scale_fill_fermenter\"      \n [65] \"scale_fill_gradient\"        \"scale_fill_gradient2\"      \n [67] \"scale_fill_gradientn\"       \"scale_fill_grey\"           \n [69] \"scale_fill_hue\"             \"scale_fill_identity\"       \n [71] \"scale_fill_manual\"          \"scale_fill_ordinal\"        \n [73] \"scale_fill_steps\"           \"scale_fill_steps2\"         \n [75] \"scale_fill_stepsn\"          \"scale_fill_viridis_b\"      \n [77] \"scale_fill_viridis_c\"       \"scale_fill_viridis_d\"      \n [79] \"scale_linetype\"             \"scale_linetype_binned\"     \n [81] \"scale_linetype_continuous\"  \"scale_linetype_discrete\"   \n [83] \"scale_linetype_identity\"    \"scale_linetype_manual\"     \n [85] \"scale_linewidth\"            \"scale_linewidth_binned\"    \n [87] \"scale_linewidth_continuous\" \"scale_linewidth_date\"      \n [89] \"scale_linewidth_datetime\"   \"scale_linewidth_discrete\"  \n [91] \"scale_linewidth_identity\"   \"scale_linewidth_manual\"    \n [93] \"scale_linewidth_ordinal\"    \"scale_radius\"              \n [95] \"scale_shape\"                \"scale_shape_binned\"        \n [97] \"scale_shape_continuous\"     \"scale_shape_discrete\"      \n [99] \"scale_shape_identity\"       \"scale_shape_manual\"        \n[101] \"scale_shape_ordinal\"        \"scale_size\"                \n[103] \"scale_size_area\"            \"scale_size_binned\"         \n[105] \"scale_size_binned_area\"     \"scale_size_continuous\"     \n[107] \"scale_size_date\"            \"scale_size_datetime\"       \n[109] \"scale_size_discrete\"        \"scale_size_identity\"       \n[111] \"scale_size_manual\"          \"scale_size_ordinal\"        \n[113] \"scale_type\"                 \"scale_x_binned\"            \n[115] \"scale_x_continuous\"         \"scale_x_date\"              \n[117] \"scale_x_datetime\"           \"scale_x_discrete\"          \n[119] \"scale_x_log10\"              \"scale_x_reverse\"           \n[121] \"scale_x_sqrt\"               \"scale_x_time\"              \n[123] \"scale_y_binned\"             \"scale_y_continuous\"        \n[125] \"scale_y_date\"               \"scale_y_datetime\"          \n[127] \"scale_y_discrete\"           \"scale_y_log10\"             \n[129] \"scale_y_reverse\"            \"scale_y_sqrt\"              \n[131] \"scale_y_time\"              \n\n\n\n5.2.1 Applying Scales\nThe scale functions can be broken down into three components:\n\nThe scale_ piece - that identifies the function as a scale function\nThe aesthetic - to which we have mapped a variable\nAn appropriate scale - these are either discrete or continuous and must match the data type.\n\nEvery time we map to an aesthetic, a default scale is applied. Which one depends on the data type. For example, if we colour by treatment (which is discrete) scale_colour_discrete is applied. As an alternative we could use scale_colour_hue.\nEach of the scales has a number of built in options which enable control over the name, limits and break points as they are displayed in the legend or axis (remember that x and y are aesthetic mappings in ggplot2).\n\n# Create a plot\nbar_plot &lt;- ggplot(data = dm,\n                   aes(x = ARM, fill = SEX)) +\n  geom_bar(position = \"dodge\") # As opposed to the default, \"stack\"\n# Without applying a scale\nbar_plot\n\n# Apply a scale to change the default colours\nbar_plot +\n  scale_fill_discrete(\"Sex\") +\n  scale_x_discrete(\"Treatment\") +\n  scale_y_continuous(\"Number of Subjects\",\n                     breaks= seq(0, 14, by = 2)) \n\n\n\n\n\n\n\n\n\n\n\n\n5.2.2 Changing the Scale\nAs long as the data type is appropriate we can simply swap one scale for another. This allows us to swap in a manual scale for a discrete one.\n\n# Apply a manual colour scale \nbar_plot +\n  scale_fill_manual(\"Sex\", values = c(\"navy\", \"darkgreen\")) +\n  scale_x_discrete(\"Treatment\") +\n  scale_y_continuous(\"Number of Subjects\", breaks = 0:8)",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html#aesthetics-that-dont-depend-on-a-variable",
+    "href": "05_aesthetics.html#aesthetics-that-dont-depend-on-a-variable",
+    "title": "5  Aesthetics and Groups",
+    "section": "5.3 Aesthetics that Don’t Depend on a Variable",
+    "text": "5.3 Aesthetics that Don’t Depend on a Variable\nThe aesthetics provide a simple framework for visualising data but sometimes we just want to colour everything in blue! In order to make aesthetic changes that don’t depend on variables we make the change in the corresponding geom layer. For example, if we wanted blue lines then we would add colour = \"blue\" to a geom_line layer. Note that when we’re not working with variables, we no longer need the aes function. Here’s an example:\n\nggplot(data = vs,\n       aes(x = WEIGHT)) +\n  geom_histogram(binwidth = 10, fill = \"tan\")",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html#available-aesthetics",
+    "href": "05_aesthetics.html#available-aesthetics",
+    "title": "5  Aesthetics and Groups",
+    "section": "5.4 Available Aesthetics",
+    "text": "5.4 Available Aesthetics\nThis section serves as a quick reference for aesthetic options available in R.\n\n5.4.1 Colours\nR has many (657) built-in named colours. These can be found by calling the colours function.\n\n# First 20 colours\ncolours()[1:20]\n\n [1] \"white\"         \"aliceblue\"     \"antiquewhite\"  \"antiquewhite1\"\n [5] \"antiquewhite2\" \"antiquewhite3\" \"antiquewhite4\" \"aquamarine\"   \n [9] \"aquamarine1\"   \"aquamarine2\"   \"aquamarine3\"   \"aquamarine4\"  \n[13] \"azure\"         \"azure1\"        \"azure2\"        \"azure3\"       \n[17] \"azure4\"        \"beige\"         \"bisque\"        \"bisque1\"      \n\n\nIt is possible to create any colour we like using “hex” (aka HTML) colour notation. The easiest way to create a hex code is to use the rgb function.\n\n# Specify red, green and blue as a proportion\nmy_col &lt;- rgb(0.1, 0.9, 0.7)\n\n# Specify red, green and blue on a standard 0 to 255 range\nmy_col &lt;- rgb(26, 230, 179, maxColorValue=255)\n\n# Draw a histogram\nggplot(data = vs,\n       aes(x = WEIGHT)) +\n  geom_histogram(binwidth = 10, fill = my_col)\n\n\n\n\n\n\n\n\nThe rgb function can also be used to add transparency via the alpha argument.\n\n\n5.4.2 Shapes\nR has a number of inbuilt shapes to choose from, as shown by the following graphic.\n\n\n\n\n\n\n\n\n\nShapes 21 to 25 are special symbols which have an inner fill aesthetic as well as the outer colour. We can also define our own shapes using quotes, eg shape = \"$\".\n\n\n5.4.3 Line Types\nR also has a selected number of dotted and dashed lines to choose from.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html#exercise",
+    "href": "05_aesthetics.html#exercise",
+    "title": "5  Aesthetics and Groups",
+    "section": "5.5 EXERCISE",
+    "text": "5.5 EXERCISE\n\nCreate a scatter plot of Change from baseline in ACT Total Score at Week 24 against the baseline ACT score\n\nVary the colour by treatment\nVary the shape of the point in order to highlight the Week 24 responders\n\nCreate a histogram of ages from the demography data (dm) coloured in hotpink. HINT: use the binwidth argument to control the width of the bins\nCreate a scatter plot of Change from baseline in ACT Total Score at Week 24 against baseline. Vary the colour by treatment and double the default size of the points\nCreate a scatter plot of Change from baseline in ACT Total Score at Week 24 against baseline. Colour records for subjects who were on the GSK drug orange and colour everything else navy blue\nCreate a line plot of the concentration values in the theophylline (theoph) data over time. Colour by SUBJID.\n\nOnly show time values from 4 hours onwards\nConvert the y axis to a log scale and label concentrations from 1 to 10\n\n\nExtra\n\nCreate a bar plot of the number of subjects at each visit (inc. Screening and EW) by treatment\n\nLabel the y-axis appropriately\nScale the x-axis so that only Baseline to Week 24 visits are shown and label the axis appropriately\nLabel the legend appropriately",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html#groups",
+    "href": "05_aesthetics.html#groups",
+    "title": "5  Aesthetics and Groups",
+    "section": "5.6 Groups",
+    "text": "5.6 Groups\nWe introduced the concept of aesthetics by creating a PK profile plot using some theophylline data. In the plot we coloured by subject, but what if we weren’t interested in knowing which subject was which? We could turn off the legend using the guide = \"none\" option for scale_colour_discrete. But what if we didn’t want different colours at all? For that we have the group option. To see why this is needed, compare the following two graphics, with and without grouping.\n\n# No grouping\nggplot(data = theoph,\n       aes(x = TIME, y = CONC)) +\n  geom_line() +\n  ggtitle(\"No Grouping\")\n\n\n# Grouping\nggplot(data = theoph,\n       aes(x = TIME, y = CONC, group = SUBJID)) +\n  geom_line() +\n  ggtitle(\"Grouping\")\n\n\n\n\n\n\n\n\n\n\nAs well as path/line plots the group option is also useful when working with maps where we need to plot boundaries. Here’s a slightly more verbose example plotting states in the USA.\n\n# Get some data (map of USA with state boundaries) from the map package\nlibrary(maps)\nstates &lt;- map_data(\"state\")\nhead(states)\n\n# Plot the data - this data has a \"group\" variable which enables the \n# addition of state boundaries.\nggplot(states,\n       aes(long, lat, group = group, fill = region)) +\n  geom_polygon(colour = \"black\")\n\n\n\n       long      lat group order  region subregion\n1 -87.46201 30.38968     1     1 alabama      &lt;NA&gt;\n2 -87.48493 30.37249     1     2 alabama      &lt;NA&gt;\n3 -87.52503 30.37249     1     3 alabama      &lt;NA&gt;\n4 -87.53076 30.33239     1     4 alabama      &lt;NA&gt;\n5 -87.57087 30.32665     1     5 alabama      &lt;NA&gt;\n6 -87.58806 30.32665     1     6 alabama      &lt;NA&gt;",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "05_aesthetics.html#exercise-1",
+    "href": "05_aesthetics.html#exercise-1",
+    "title": "5  Aesthetics and Groups",
+    "section": "5.7 EXERCISE",
+    "text": "5.7 EXERCISE\n\nCreate time profiles for the ACT Total Score each of the subjects in act_full and colour by treatment.\n\nExtra\n\nGSK is running an RCT in the US states of New York, New Jersey, North Carolina, Florida and California. Demonstrate the relative coverage of USA by drawing a map of the country and colouring these states in dark green. HINT: Use the if_else and %in% functions to create a flag in the states data",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Aesthetics and Groups</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html",
+    "href": "06_graph_types.html",
+    "title": "6  Graph Types: Geoms",
+    "section": "",
+    "text": "6.1 Histograms and Bar Charts\nThere are many geom layers available to us. Each of the geoms in the list above can be added as layers to a ggplot graphic. Currently this is the complete list:\nThe general framework remains the same whichever geom we use. In this section we look more closely at some of the everyday geoms that we use and some of the additional options available for tailoring our graphics.\nThe standard way of displaying a single continuous variable is via a histogram. To do so we use a geom_histogram layer, remembering to specify either the number of bins, bins or the width of the bins, binwidth. Note that the fill aesthetic controls the colour of the bars. By default the bars have no border and we may wish to add this using the colour aesthetic.\nggplot(data = dm,\n       aes(x = AGE)) +\n  geom_histogram(bins = 6, fill = \"orange\", alpha = .5, colour = \"black\")\nIn the ggplot framework we can easily switch the histogram for a density plot, which plots the kernel density estimate. Note that the distribution is only estimated within the range of the data which has the effect of truncating the plot at either end.\nggplot(data = dm,\n       aes(x = AGE)) +\n  geom_density(fill = \"blue\", alpha = .5)\nWhen working with discrete data, for which we wish to display counts of various categories, we can use geom_bar to create a bar plot. By default, geom_bar counts the number of records in each category so if we have pre-summarised data then we need to use the stat = identity option.\n# Count subjects \"manually\"\narm_count &lt;- dm %&gt;%\n  group_by(ARM) %&gt;%\n  summarise(`Number of Subjects` = length(USUBJID))\nggplot(data = arm_count,\n       aes(x = ARM, y = `Number of Subjects`)) +\n  geom_bar(stat = \"identity\", fill = \"gold\")",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#histograms-and-bar-charts",
+    "href": "06_graph_types.html#histograms-and-bar-charts",
+    "title": "6  Graph Types: Geoms",
+    "section": "",
+    "text": "6.1.1 stat_ Functions\nWe won’t cover the stat functions on this course in any detail but any geom that presents summarised data is underpinned by a stat function. The stat functions simply summarise the data and output a summarised dataset that is suitable for the chosen geom. Setting stat = \"identity\" allows us to provide our own pre-summarised data, so long as it is in the right form. Writing custom stat functions is not advised for a beginner!\n\n\n6.1.2 Dodge, Stack and Fill\nIf we choose to fill by another discrete variable, the default behaviour is to create a stacked bar chart. We can switch to a “dodged” (side-by-side) display using the position argument (position = \"dodge\"). Another option is to set position = \"fill\", which creates a proportional representation of the data. Bars may be further manipulated using the width argument for which numbers less than 1 result in thinner bars.\n\nbase_plot &lt;- ggplot(data = dm,\n                    aes(x = ARM, fill = SEX)) \n  \nbase_plot + geom_bar(position = \"dodge\", width = .4)\nbase_plot + geom_bar(position = \"stack\", width = .4)\nbase_plot + geom_bar(position = \"fill\", width = .4)\n\n\n\n\n\n\n\n\n\n\nEach of the three positioning options above has a corresponding position_ function that can be supplied instead in order to make use of additional functionality. Below, position_dodge is used in order to add a space between the bars. Confusingly the space between bars is controlled by an argument, width.\n\nbase_plot + geom_bar(position = position_dodge(width = .5), width = .4)",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#boxplots",
+    "href": "06_graph_types.html#boxplots",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.2 Boxplots",
+    "text": "6.2 Boxplots\nCreating a simple boxplot is very straightforward. The only consideration is the data type. For example, here is a (not very useful -see explanation after plot) boxplot of ACT Total Score by visit.\n\n# Subset to planned visits\nact_full_planned &lt;- act_full %&gt;% filter(20 &lt;= VISITNUM, VISITNUM &lt;= 60)\n\nggplot(data = act_full_planned,\n       aes(x = VISITNUM, y = ACTTOT)) +\n  geom_boxplot()\n\n\n\n\n\n\n\n\nThe problem is that that the variable, VISITNUM is continuous. In order to create separate boxplots at each visit we require discrete data. It is best to change this within the code by changing VISITNUM to a character or factor variable. We can also change the data type directly within the call to aes . However, this results in less readable code and undesirable axis labels.\n\n# Create some nicer visit labels\nvisit_labels &lt;- c(\"Baseline\", paste(\"Week\", seq(6, 24, 6)))\n\n# An on-the-fly fix\nggplot(data = act_full_planned, \n       aes(x = factor(VISITNUM, labels = visit_labels), y = ACTTOT)) +\n  geom_boxplot()\n\n\n\n\n\n\n\n\nAs a boxplot is an area, we usually vary the fill aesthetic if we wish to compare, say, treatments.\n\n# Create some nicer visit labels\nvisit_labels &lt;- c(\"Baseline\", paste(\"Week\", seq(6, 24, 6)))\n\n# Fill by treatment\nggplot(data = act_full_planned, \n       aes(x = factor(VISITNUM, labels = visit_labels), \n           y = ACTTOT, fill = ARM)) +\n  geom_boxplot()\n\n\n\n\n\n\n\n\n\n6.2.1 Boxplot Options\nDue to the relative complexity of a boxplot the geom_boxplot function has several additional options that allow for greater customisation of the plot. Some of the key features are listed below.\n\noutlier.colour, outlier.shape, outlier.size, etc. to control the appearance of outliers\ncoef - length of the whiskers as multiple of IQR (default = 1.5)\nnotch and notchwidth - add indentation\n\nIt’s worth noting that the definition of how a boxplot should be drawn varies from software to software. As taken from the help file, “The lower and upper hinges [end of the box] correspond to the first and third quartiles (the 25th and 75th percentiles).” As an alternative we might consider specifying stat = \"identity\" and generating our summary.\n\n\n6.2.2 Other Available Geoms for Distributions\nAs an alternative to the boxplot, geom_violin instead plots the empirical distribution in the boxplot style.\nOn two-dimensional plots the geom_rug function adds a barcode-like representation of the marginal distributions.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#paths-and-lines",
+    "href": "06_graph_types.html#paths-and-lines",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.3 Paths and Lines",
+    "text": "6.3 Paths and Lines\nThere are two functions for drawing a line graph in ggplot2: geom_path and geom_line. The difference is the order that the points are plotted. The geom_path function follows the order of the data while the geom_line plots points in the order they appear in the x-axis, i.e. from left to right. It is therefore more suited to plotting time-variant data. So long as we account for the order and structures within our data the choice is largely arbitrary.\nThe difference can be seen in the following plots.\n\nrandom_data &lt;- tibble(x = c(4,6,2,4,2,4,1),\n                     y = c(7,2,1,6,3,8,5))\nbase_plot &lt;- ggplot(data = random_data,\n                    aes(x = x, y = y)) \n\n# Path\nbase_plot + geom_path() +\n  ggtitle(\"Path Plot of \\\"Random\\\" Data\")\n\n# Line\nbase_plot + geom_line() +\n  ggtitle(\"Line Plot of \\\"Random\\\" Data\")",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#kaplan-meier-plots",
+    "href": "06_graph_types.html#kaplan-meier-plots",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.4 Kaplan Meier Plots",
+    "text": "6.4 Kaplan Meier Plots\nThere is currently no in-built functionality that enables us to quickly draw Kaplan-Meier curves. However the underlying data is easy to generate using the survival and broom packages. In the example below we use the survfit function to generate the KM estimates from the in-built lung data. We extract the required coordinates using tidy and then use the geom_step function to plot the necessary stepped curve. Deaths are added to the plot via an additional geom_point layer. We will look more closely at working with multiple geom layers following the exercises.\n\n# Import the lung data from the survival package\nlibrary(survival)\nlibrary(broom)\nhead(lung)\n\n  inst time status age sex ph.ecog ph.karno pat.karno meal.cal wt.loss\n1    3  306      2  74   1       1       90       100     1175      NA\n2    3  455      2  68   1       0       90        90     1225      15\n3    3 1010      1  56   1       0       90        90       NA      15\n4    5  210      2  57   1       1       90        60     1150      11\n5    1  883      2  60   1       0      100        90       NA       0\n6   12 1022      1  74   1       1       50        80      513       0\n\n# Create a KM fit\ncox_mod &lt;- survfit(Surv(time, status) ~ ph.ecog , data=lung)\nkm_lung &lt;- tidy(cox_mod)\n\n# Plot the data\nggplot(data = km_lung, \n       aes(x = time, y = estimate, colour = strata)) +\n  geom_step() +\n  # Censoring - more on multiple layers coming up\n  geom_point(aes(shape = factor(n.censor)), size = 4) +\n  # Mark deaths with a + but don't add to the legend\n  scale_shape_manual(values = c(\"\", \"+\"), guide = 'none')",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#exercise",
+    "href": "06_graph_types.html#exercise",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.5 EXERCISE",
+    "text": "6.5 EXERCISE\n\nCreate a density plot of age using the demography data\n\nShade the area by treatment\nAdjust the transparency so that the full curves can be seen for both treatments\n\nCreate a boxplot of Change from baseline in ACT Total Score at Week 24 by Sex\n\nColour (fill) by treatment\nChange the shape used for outliers to an empty circle\n\nCreate a violin plot of Change from baseline in ACT Total Score at Week 24 by Sex\nCreate a bar plot of the number of observations for each treatment group, at each visit in the ACT data (excluding early withdrawals).\n\nExtra\n\nNarrow the boxplots from question (2) and separate so that none of the boxplots touch each other",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#combining-geoms",
+    "href": "06_graph_types.html#combining-geoms",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.6 Combining Geoms",
+    "text": "6.6 Combining Geoms\nBefore we look at any more graph types, let’s look briefly at how the geoms that we are creating may be used together. The layered approach allows us to combine geoms by adding them as separate layers. For example we might wish to add symbols as discrete time points when plotting a line graph.\n\nggplot(data = pk,\n       aes(x = TIME, y = CONC, group = SUBJID)) +\n  geom_line() +\n  geom_point(colour = \"red\")\n\n\n\n\n\n\n\n\n\n6.6.1 Mapping Data Within Geom Layers\nUntil now we have always called the aes function from within the ggplot function. However it is also possible to define our mappings within the geom layers themselves. Consider the previous example.\n\nggplot(data = pk,\n       aes(x = TIME, y = CONC, group = SUBJID)) +\n  geom_line() +\n  geom_point(colour = \"red\")\n\nHere we specified a group option that is not required for geom_point. Thankfully the unnecessary information was ignored. However, to be more specific we could have defined the grouping within the geom_line layer.\n\nggplot(data = pk,\n       aes(x = TIME, y = CONC)) +\n  geom_line(aes(group = SUBJID)) +\n  geom_point(colour = \"red\")\n\nIt could be argued that this is technically more robust code, although it actually involved some additional typing since we had to call the aes function again within the geom_line layer.\nIn most cases, where we define our mappings makes no difference and there are no general conventions on where it should be defined. However, it is worth noting that if we define a mapping in the ggplot layer it is inherited by subsequent layers. Whereas if we define a mapping within a geom layer it applies only to that layer.\n\n\n6.6.2 Working with Multiple Datasets\nIn addition to the mappings, we may also move the data argument to the geom layers. This enables us to use multiple datasets within the same graph. A common example of this is adding summary information to a plot. Here is a very simple example using our two-subject PK data.\n\n# Find the average at each time of our two pk subjects\npk_ave &lt;- pk %&gt;%\n  group_by(TIME) %&gt;%\n  summarise(CONC = median(CONC))\n\n# Plot the original data and the average\nggplot() +\n  geom_point(data = pk,\n             aes(x = TIME, y = CONC)) +\n  geom_line(data = pk_ave,\n            aes(x = TIME, y = CONC), colour = \"red\")",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#error-bars-and-ribbons",
+    "href": "06_graph_types.html#error-bars-and-ribbons",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.7 Error Bars and Ribbons",
+    "text": "6.7 Error Bars and Ribbons\n\n6.7.1 Error Bars\nTypically, we draw error bars at specific time points along an x axis. At each time point we require a lower and upper bound (in ggplot, error bars have no midpoint, that is achieved using other geoms). Rather than mapping a single variable to a y aesthetic we map each of our two variables to a ymin and a ymax aesthetic respectively.\nIn the following example we will plot some standard errors for the change from baseline in ACT Total Scores at each (post-baseline) time point.\n\n# Summarise the ACT data\nact_post_bl_summary &lt;- act_full %&gt;%\n  # Post BL data\n  filter(30 &lt;= VISITNUM, VISITNUM &lt;= 60) %&gt;%\n  # Mean and standard errors for each visit\n  group_by(VISITNUM) %&gt;%\n  summarise(Mean = mean(ACTCHGBL),\n            N = length(USUBJID),\n            SE = sd(ACTCHGBL) / sqrt(N),\n            LowerSE = Mean - SE,\n            UpperSE = Mean + SE)\n\n# Now the plotting bit\nerrorbar_eg &lt;- ggplot(data = act_post_bl_summary, \n                      aes(x = VISITNUM, ymin = LowerSE, ymax = UpperSE)) +\n  geom_errorbar(width = 0.8) # NOTE the 'width' argument\nerrorbar_eg\n\n\n\n\n\n\n\n\nNote the use of the width argument. By default the caps on the bars can be quite wide and we will almost always wish to decrease the width from the default value.\n\n\n6.7.2 Combining Error Bars with Other “geoms”\nThe geom_errorbar function is very flexible and can be combined with either continuous or discrete data. Here’s the previous example again with a line joining up the mean values.\n\n# Add lines to our previous example\nerrorbar_eg +\n  geom_line(aes(y = Mean)) +\n  geom_point(aes(y = Mean), colour = \"orange\", size = 2) +\n  scale_y_continuous(\"Mean (+/- SE)\")\n\n\n\n\n\n\n\n\nAnd here’s an alternative of adding error bars to a bar chart.\n\n# Add a bar chart underneath the error bars \n# Note: this puts bars on top of the error bars\n#       in practice swap the order\nerrorbar_eg +\n  geom_bar(stat = \"identity\", aes(y = Mean), alpha = .5, fill = \"maroon\") +\n  scale_y_continuous(\"Mean (+/- SE)\")\n\n\n\n\n\n\n\n\n\n\n6.7.3 Ribbons\nWhere the x-axis is time (and the time points are equally spaced) it can make sometimes be preferable to draw a “ribbon” instead of bars. To achieve this we simply swap geom_errorbar for geom_ribbon.\n\nribbon_plot &lt;- ggplot(data = act_post_bl_summary, \n       aes(x = VISITNUM, ymin = LowerSE, ymax = UpperSE)) +\n  geom_ribbon(fill = \"lightblue\", alpha = .2) +\n  geom_line(aes(y = Mean)) +\n  geom_point(aes(y = Mean), colour = \"orange\", size = 2) +\n  scale_y_continuous(\"Mean (+/- SE)\")\n\nribbon_plot\n\n\n\n\n\n\n\n\n\n\n6.7.4 Other Geoms for Ranges\nOther geoms for drawing ranges include:\n\ngeom_linerange for drawing a vertical interval line at a single x value\ngeom_pointrange for drawing a vertical interval line at a single x value with a point in the middle\ngeom_errorbarh for plotting horizontal error bars as we might see in a forest plot.\ngeom_crossbar - creates output much like the box section of a boxplot, thereby allowing us to define our own boxplots.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#reference-lines-and-smoothers",
+    "href": "06_graph_types.html#reference-lines-and-smoothers",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.8 Reference Lines and Smoothers",
+    "text": "6.8 Reference Lines and Smoothers\nThe ggplot package contains several geoms for adding reference lines. To start with let’s look at the simplest form of reference line, a vertical (or horizontal) line.\n\nFor vertical lines we use geom_vline(xintercept = ... )\nFor horizontal lines we use geom_hline(yintercept = ... )\n\nHere, we add a horizontal reference line for a clinically meaningful change from baseline in the ACT Total Score.\n\n# Add a red, dotted reference line to the ribbon plot\nribbon_plot +\n  geom_hline(yintercept = 3, linetype = 3, colour = \"red\", linewidth = 1.5)\n\n\n\n\n\n\n\n\nWe can also add diagonal reference lines using geom_abline. This function requires an intercept and a slope.\n\n# Create a scatter plot of weight against height.\nscat &lt;- ggplot(data = vs,\n               aes(x = HEIGHT, y = WEIGHT)) +\n  geom_point()\n\n# Use a linear model to get a best-fit line\na_model &lt;- lm(data = vs, WEIGHT ~ HEIGHT)\nint &lt;- coef(a_model)[\"(Intercept)\"]\nslope &lt;- coef(a_model)[\"HEIGHT\"]\n\n# Add a reference line\nscat + \n  geom_abline(intercept=int, slope = slope, colour = \"darkgreen\", \n              size = 1.5)\n\nWarning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.\nℹ Please use `linewidth` instead.\n\n\n\n\n\n\n\n\n\n\n6.8.1 Smooth Lines\nIt is also fairly straightforward to fit different smoothers using geom_smooth. For less than 1,000 observations the default is to fit a loess smoother. Other options are available via the method argument. These include lm for linear model and gam for a generalised additive model (the default for &gt;1,000 observations).\n\n# Create a scatter plot of weight against height.\nggplot(data = vs,\n       aes(x = HEIGHT, y = WEIGHT)) +\n  geom_point() +\n  geom_smooth(colour = \"hotpink3\", size = 1.5)\n\n`geom_smooth()` using method = 'loess' and formula = 'y ~ x'",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#text",
+    "href": "06_graph_types.html#text",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.9 Text",
+    "text": "6.9 Text\nThe geom_text function requires x and y coordinates and a label argument (i.e. the text that we wish to add). The coordinates and label can be entered manually or we could use a dataset.\n\n6.9.1 Manual Annotation\nHere is an example that uses text to add to our earlier ribbon plot.\n\nribbon_plot +\n  geom_hline(yintercept = 3, linetype = 3, colour = \"red\") +\n  geom_text(x = 60, y = 3, colour = \"red\",\n            label = \"Clinically\\nmeaningful\\ndifference\",\n            hjust = 1, vjust = 1)\n\n\n\n\n\n\n\n\nIn addition to the three base arguments we changed the colour and used the hjust and vjust arguments to adjust the horizontal and vertical alignment of the text relative to the coordinates we provide. Both arguments take values in the 0:1 range. In the plot above we set both parameters to be equal to one, meaning that the text is right- and top-aligned.\nWe can also control the rotation of the text using the angle argument. And we can even control the line spacing via the lineheight argument.\n\n\n6.9.2 Automated Text Labelling\nUsing a data frame it is very easy to add automated text labels to our plot. Arguments nudge_x and nudge_y provide further assistance when labelling points.\n\nggplot(data = pk,\n       aes(x = TIME, y = CONC, group = SUBJID)) +\n  geom_line(alpha = .4) +\n  geom_point() +\n  geom_text(aes(label = SUBJID), nudge_x = .5, nudge_y = .5)",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "06_graph_types.html#exercise-1",
+    "href": "06_graph_types.html#exercise-1",
+    "title": "6  Graph Types: Geoms",
+    "section": "6.10 EXERCISE",
+    "text": "6.10 EXERCISE\n\nRe-create the Change from Baseline in ACT Total Score over time error bar example but separate out the two treatment groups. HINT: Use the code in the accompanying course R script to save time\n\nOffset the treatment groups so that the intervals don’t overlap. HINT: Use position_dodge()\nAdd points and lines through the means and ensure that they line up with the intervals\n\n\nExtra\n\nCreate a boxplot of Change from baseline in ACT Total Score at Week 24 by Sex and label the outlier(s) with their subject number\nFit a linear model of the change from baseline in Act Total Score with explanatory variables of treatment, age, gender, visit. Now create a QQ plot of the quantiles from the model. HINT: use geom_qq.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Graph Types: Geoms</span>"
+    ]
+  },
+  {
+    "objectID": "07_panelling.html",
+    "href": "07_panelling.html",
+    "title": "7  Panelling: Faceting",
+    "section": "",
+    "text": "7.1 Grid Layouts\nOne of the most distinguishing features of the original S-PLUS trellis library was the ability to compare graphics levels of factor variables in separate plots as opposed to using colour, shape or size to distinguish between the levels. In S-PLUS this was known as trellising and was later modified for R and re-branded latticing in R’s lattice package. In ggplot2 it is called faceting.\nWe create our panelled plots either by adding a facet_grid or a facet_wrap layer. We start with facet_grid.\nThe facet_grid function creates a panelled plot where panels comparing a variable are either stacked vertically or horizontally. We can control whether the panels are stacked vertically or horizontally by placing the variable name to the right or left of a ~ (tilde) respectively. For example, here are age histograms for females and males plotted side by side.\nggplot(data = dm,\n       aes(x = AGE)) +\n  geom_histogram(binwidth = 10, fill = \"lightblue\") +\n  facet_grid(. ~ SEX)\nNote the use of the .. We must ensure that either a variable or the . is specified on either side of the tilde. If we only wish to panel by a single variable we place a . on the other side. In order to stack the panels vertically we would swap the . and the SEX variable around.\nWe can panel by as many variables as we wish to. Here we panel by sex and treatment.\nggplot(data = dm,\n       aes(x = AGE)) +\n  geom_histogram(binwidth = 5, fill = \"lightblue\") +\n  facet_grid(ARM ~ SEX)\nHere we use a + to align all four panels vertically.\nggplot(data = dm,\n       aes(x = AGE)) +\n  geom_histogram(binwidth = 5, fill = \"lightblue\") +\n  facet_grid(ARM + SEX ~ .)",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Panelling: Faceting</span>"
+    ]
+  },
+  {
+    "objectID": "07_panelling.html#wrapping",
+    "href": "07_panelling.html#wrapping",
+    "title": "7  Panelling: Faceting",
+    "section": "7.2 Wrapping",
+    "text": "7.2 Wrapping\nWhen a variable has multiple levels, forcing each of the panels to stack in one direction or another may not be practical. The facet_wrap is an alternative to facet_grid that fills the space as best it can. We are still required to use the tilde to specify variable, however the left-hand side has no meaning. We may therefore leave it blank and list all variables to the right of the tilde, still separating each one with a +.\n\nggplot(data = theoph,\n       aes(x = TIME, y = CONC, group = SUBJID)) +\n  geom_line() +\n  facet_wrap(~ DOSE)",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Panelling: Faceting</span>"
+    ]
+  },
+  {
+    "objectID": "07_panelling.html#labelling",
+    "href": "07_panelling.html#labelling",
+    "title": "7  Panelling: Faceting",
+    "section": "7.3 Labelling",
+    "text": "7.3 Labelling\nBy default, only the levels are shown in the ‘strip header’. If the levels are non-informative such as ‘Y’ and ‘N’ then it can be helpful to include the original variable as well. This is achieved via the labeller argument. We can write our own labelling functions but it’s usually simpler to use the unbuilt label_both function.\n\nggplot(data = theoph,\n       aes(x = TIME, y = CONC, group = SUBJID)) +\n  geom_line() +\n  facet_wrap(~ DOSE, labeller = label_both)",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Panelling: Faceting</span>"
+    ]
+  },
+  {
+    "objectID": "07_panelling.html#control-of-the-panels",
+    "href": "07_panelling.html#control-of-the-panels",
+    "title": "7  Panelling: Faceting",
+    "section": "7.4 Control of the Panels",
+    "text": "7.4 Control of the Panels\nThere are several additional arguments to the facet functions including the ability to free scale one or both of the axes.\nLater we will look at how to control styling elements such as the orientation of text in the panel headers.",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Panelling: Faceting</span>"
+    ]
+  },
+  {
+    "objectID": "07_panelling.html#exercise",
+    "href": "07_panelling.html#exercise",
+    "title": "7  Panelling: Faceting",
+    "section": "7.5 EXERCISE",
+    "text": "7.5 EXERCISE\n\nCreate a single plot showing individual time profiles for the ACT total score (ACTTOT).\n\nUse transparency to “soften” the lines and overlay crosses at each planned time point and colour by treatment.\nCreate two separate panels for responders and non-responders at week 24.\n\nCreate a histogram of the ACTTOT variable and panel this by visit\nCreate a bar plot of the proportion of ACT responders at Week 24 by treatment and panel by sex and smoking status",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Panelling: Faceting</span>"
+    ]
+  },
+  {
+    "objectID": "08_themes_and_styling.html",
+    "href": "08_themes_and_styling.html",
+    "title": "8  Themes and Styling",
+    "section": "",
+    "text": "8.1 Theme Elements\nThe ggplot2 default themes and stylings are generally very good. However, there is nearly always the need to customise a plot to some degree. In this section we look at some high level styling options that can be added as global or local (plot-specific) styling preferences.\nSo far we have seen how we can use aesthetics to modify the features of our graphic. High level styling options such as the panels, strip headers, gridlines and legend layout are all be modified on a plot by plot basis via the theme function. A full list of arguments is provided below:\nargs(theme) \n\nfunction (..., line, rect, text, title, point, polygon, geom, \n    spacing, margins, aspect.ratio, axis.title, axis.title.x, \n    axis.title.x.top, axis.title.x.bottom, axis.title.y, axis.title.y.left, \n    axis.title.y.right, axis.text, axis.text.x, axis.text.x.top, \n    axis.text.x.bottom, axis.text.y, axis.text.y.left, axis.text.y.right, \n    axis.text.theta, axis.text.r, axis.ticks, axis.ticks.x, axis.ticks.x.top, \n    axis.ticks.x.bottom, axis.ticks.y, axis.ticks.y.left, axis.ticks.y.right, \n    axis.ticks.theta, axis.ticks.r, axis.minor.ticks.x.top, axis.minor.ticks.x.bottom, \n    axis.minor.ticks.y.left, axis.minor.ticks.y.right, axis.minor.ticks.theta, \n    axis.minor.ticks.r, axis.ticks.length, axis.ticks.length.x, \n    axis.ticks.length.x.top, axis.ticks.length.x.bottom, axis.ticks.length.y, \n    axis.ticks.length.y.left, axis.ticks.length.y.right, axis.ticks.length.theta, \n    axis.ticks.length.r, axis.minor.ticks.length, axis.minor.ticks.length.x, \n    axis.minor.ticks.length.x.top, axis.minor.ticks.length.x.bottom, \n    axis.minor.ticks.length.y, axis.minor.ticks.length.y.left, \n    axis.minor.ticks.length.y.right, axis.minor.ticks.length.theta, \n    axis.minor.ticks.length.r, axis.line, axis.line.x, axis.line.x.top, \n    axis.line.x.bottom, axis.line.y, axis.line.y.left, axis.line.y.right, \n    axis.line.theta, axis.line.r, legend.background, legend.margin, \n    legend.spacing, legend.spacing.x, legend.spacing.y, legend.key, \n    legend.key.size, legend.key.height, legend.key.width, legend.key.spacing, \n    legend.key.spacing.x, legend.key.spacing.y, legend.key.justification, \n    legend.frame, legend.ticks, legend.ticks.length, legend.axis.line, \n    legend.text, legend.text.position, legend.title, legend.title.position, \n    legend.position, legend.position.inside, legend.direction, \n    legend.byrow, legend.justification, legend.justification.top, \n    legend.justification.bottom, legend.justification.left, legend.justification.right, \n    legend.justification.inside, legend.location, legend.box, \n    legend.box.just, legend.box.margin, legend.box.background, \n    legend.box.spacing, panel.background, panel.border, panel.spacing, \n    panel.spacing.x, panel.spacing.y, panel.grid, panel.grid.major, \n    panel.grid.minor, panel.grid.major.x, panel.grid.major.y, \n    panel.grid.minor.x, panel.grid.minor.y, panel.ontop, panel.widths, \n    panel.heights, plot.background, plot.title, plot.title.position, \n    plot.subtitle, plot.caption, plot.caption.position, plot.tag, \n    plot.tag.position, plot.tag.location, plot.margin, strip.background, \n    strip.background.x, strip.background.y, strip.clip, strip.placement, \n    strip.text, strip.text.x, strip.text.x.bottom, strip.text.x.top, \n    strip.text.y, strip.text.y.left, strip.text.y.right, strip.switch.pad.grid, \n    strip.switch.pad.wrap, complete = FALSE, validate = TRUE) \nNULL\nIn order to modify theme elements, we need to use one of a small number of in-built functions:\nThe choice of which to use depends on what it is we’re modifying. For example, titles and axis labels are text and so the element_text is required. Axis and grid lines require the use of element_line and the plot area and strip header are shaded rectangles for which element_rect must be used.\nWe may also use element_blank to remove elements. Here is an example of a call to theme:\n# Create a plot\npk_plot &lt;- ggplot(data = pk,\n                  aes(x = TIME, y = CONC)) +\n  facet_wrap( ~ SUBJID) +\n  geom_line() +\n  geom_point()\n\n# Draw the plot but modify some theme elements\npk_plot +\n  theme(panel.grid.minor.x = element_blank(),\n        panel.grid.minor.y = element_blank(),\n        strip.text = element_text(colour = \"white\"),\n        strip.background = element_rect(fill = \"black\"))",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Themes and Styling</span>"
+    ]
+  },
+  {
+    "objectID": "08_themes_and_styling.html#theme-elements",
+    "href": "08_themes_and_styling.html#theme-elements",
+    "title": "8  Themes and Styling",
+    "section": "",
+    "text": "element_text\nelement_line\nelement_rect",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Themes and Styling</span>"
+    ]
+  },
+  {
+    "objectID": "08_themes_and_styling.html#global-themes",
+    "href": "08_themes_and_styling.html#global-themes",
+    "title": "8  Themes and Styling",
+    "section": "8.2 Global Themes",
+    "text": "8.2 Global Themes\nA ggplot object is really just a list of instructions the explain how we would like our graphic to look. The plot is only actually created when we ask R to print it. If we don’t specify certain arguments then defaults are used. This is particularly true for the overall plot theme, which is called upon only at the point when the graph is drawn. We can use the theme_set function to change the global theme, and hence the appearance of all graphics from that point forwards.\nBuilding your own them from scratch is not recommended! It is generally easier to begin by choosing from a small number of in-built themes. The theme for these materials is theme_bw. The package default is theme_grey. Further themes can be found in the ggthemes package.\n\n# Set the global theme using a theme in ggthemes\ntheme_set(ggthemes::theme_excel(base_size = 12))\n\n# Draw the plot (in this case one that we created earlier)\npk_plot\n\n\n\n\n\n\n\n\nAll of the in-built themes come with options base_size and base_family which control the font size and family at a global level. This allows us to define different global themes for different formats. For example we might look to increase the font size for a presentation. The global themes can also be added to individual plots as layers.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Themes and Styling</span>"
+    ]
+  },
+  {
+    "objectID": "08_themes_and_styling.html#modifying-global-themes",
+    "href": "08_themes_and_styling.html#modifying-global-themes",
+    "title": "8  Themes and Styling",
+    "section": "8.3 Modifying Global Themes",
+    "text": "8.3 Modifying Global Themes\nOnce we’ve settled upon a global theme that is close to what we want, we use the theme_update function to modify individual elements in the same way as we would if we were using the theme function.\n\n# Update the theme\ntheme_update(panel.background = element_rect(fill = \"orange\"))\n\n# Re-draw the plot again\npk_plot\n\n\n\n\n\n\n\n# Set the theme back to something a bit nicer\ntheme_set(theme_bw(base_size = 12))",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Themes and Styling</span>"
+    ]
+  },
+  {
+    "objectID": "08_themes_and_styling.html#legend-control",
+    "href": "08_themes_and_styling.html#legend-control",
+    "title": "8  Themes and Styling",
+    "section": "8.4 Legend Control",
+    "text": "8.4 Legend Control\nSo far we’ve seen how the scale_* functions affect the legend content and how themes can be used to further modify the styling of the legend. The guide_legend function is a single function that provides styling functionality and allows the user to override default settings and further customise the legend layout.\n\nggplot(data = theoph,\n       aes(x = TIME, y = CONC, \n                          colour = DOSE, group = SUBJID)) + \n  geom_line() +\n  geom_point() +\n  theme(legend.position = \"bottom\") +\n  guides(colour = \n           guide_legend(title = \"Dose\", title.position = \"left\", nrow = 2, \n                        direction = \"vertical\",\n                        title.theme = element_text(face = \"bold\", angle = 0)))",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Themes and Styling</span>"
+    ]
+  },
+  {
+    "objectID": "09_quick_plots.html",
+    "href": "09_quick_plots.html",
+    "title": "9  Shortcuts and Quick Plots",
+    "section": "",
+    "text": "9.1 Axes: Quick Functions\nIn this section we look at some utility functions as well as the “quick plot” function, qplot.\nIn general it is best to use the scale_* functions when modifying axes. However there are a number of utility functions that can be used as an alternative:\nEach of these functions has a single, self-explanatory purpose. But here’s an example anyway:\nmy_plot &lt;- ggplot(data = pk,\n                  aes(x = TIME, y = CONC, colour = SUBJID)) +\n  geom_line()\nmy_plot +\n  ggtitle(\"Concentration over Time for 2 Subjects\",\n          subtitle = \"Using Simulated Data\") +\n  xlab(\"Time (days)\") + \n  ylab(\"Concentration (units)\") +\n  # *lim functions require a vector of lower and upper limits\n  xlim(c(0, 30)) +\n  ylim(c(0, NA)) # No upper limit defined, use data",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Shortcuts and Quick Plots</span>"
+    ]
+  },
+  {
+    "objectID": "09_quick_plots.html#axes-quick-functions",
+    "href": "09_quick_plots.html#axes-quick-functions",
+    "title": "9  Shortcuts and Quick Plots",
+    "section": "",
+    "text": "xlab\nylab\nxlim\nylim",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Shortcuts and Quick Plots</span>"
+    ]
+  },
+  {
+    "objectID": "09_quick_plots.html#the-qplot-function",
+    "href": "09_quick_plots.html#the-qplot-function",
+    "title": "9  Shortcuts and Quick Plots",
+    "section": "9.2 The qplot Function",
+    "text": "9.2 The qplot Function\nThe ggplot function provides a consistent framework from which to create high quality customised graphics. However the syntax can be a little verbose when all that’s required is a simple scatter plot. For this very reason, the qplot function exists! The “q” in “qplot” stands for quick. The aim is to enable us to quickly explore data without having to write huge amounts of code. The usage is much like R’s base plot function.\nBy default, qplot chooses the most appropriate geom for us based on data types. A single continuous variable is displayed as a histogram, bivariate continuous data are displayed as a scatter plot. As you can see in the example below, it also makes the assumption that we are mapping variables to aesthetics and so the `aes’ function is no longer required.\n\n# Create some baseline data\nbl_data &lt;- act_full %&gt;% filter(VISITNUM == 20)\n\n# Quickly plot it\nqplot(data = bl_data, x = AGE, y = ACTTOT)\n\n\n\n\n\n\n\n\nOther layers, such as facets, titles and axis information can be passed to qplot directly in a single call.\n\nqplot(data = bl_data, x = AGE, y = ACTTOT, \n      main = \"Baseline ACT Total Score against Age\",\n      xlab = \"Age\", ylab = \"Total Score\",\n      xlim = c(15, 65), ylim = c(0, 25),\n      facets = ~ ARM)\n\n\n\n\n\n\n\n\n\n9.2.1 Changing the geom with qplot\nIt is also possible to change the default geom when using qplot. In order to do so we use the geom argument. The geom argument takes character string, and expects the name of a geom function, without the “geom_” prefix. For example, geom_boxplot becomes geom = \"boxplot\".\n\nqplot(data = bl_data, x = ARM, y = ACTTOT, fill = ARM,\n      geom = \"boxplot\",\n      main = \"Boxplot of ACT Total Score By Treatment at Baseline\",\n      xlab = \"Treatment\", ylab = \"ACT Total Score\")\n\n\n\n\n\n\n\n\n\n\n9.2.2 Drawbacks of qplot\nNot having to write aes when refering to variables comes at a price. If we wish to simply colour everything blue then we need to use the I function to do so. The same applies for any aesthetic that is not mapped from the data.\n\n# Make it blue!\nqplot(data = bl_data, x = AGE, y = ACTTOT, colour = I(\"blue\"))\n\n\n\n\n\n\n\n\nControlling how information is passed between layers can also be a challenge when using qplot. Although additional layers can still be used to enhance any quick plot, the qplot function is best used when working with a single dataset and a single geom.\nFinally, it is worth noting that the flexibility of the functionality was reduced in a recent ggplot update. Hadley Wickham has also recently restructured his own materials to reduce the function’s “airtime”. The future may therefore not be bright for qplot.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Shortcuts and Quick Plots</span>"
+    ]
+  },
+  {
+    "objectID": "09_quick_plots.html#exercise",
+    "href": "09_quick_plots.html#exercise",
+    "title": "9  Shortcuts and Quick Plots",
+    "section": "9.3 EXERCISE",
+    "text": "9.3 EXERCISE\n\nCreate a scatter plot of Change from baseline in ACT Total Score at Week 24 against baseline using qplot\n\nVary the colour by treatment\nVary the shape of the point in order to highlight the Week 24 responders\nUse [geom_]jitter instead of [geom_]point.\n\nCreate a density plot of age with the demography data (dm) using qplot\n\nShade the area by treatment\nAdjust the transparency so that the full curves can be seen for both treatments\n\n\nExtra\n\nCreate an individual time profile plot (i.e. panel by USUBJID) of the change from baseline in ACT Total Score over time, from baseline to week 24 (excluding EW)\n\nColour by treatment\nMove the legend to the bottom of the graph and ensure that the two treatments are side by side in the legend\n\nCreate your own theme which has no major or minor grid lines and for which the strip header text is always in bold. Test this theme on the graphic from question 3.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Shortcuts and Quick Plots</span>"
+    ]
+  },
+  {
+    "objectID": "10_utilities.html",
+    "href": "10_utilities.html",
+    "title": "10  Utilities",
+    "section": "",
+    "text": "10.1 The {gridExtra} Package\nLike lattice, ggplot2 was built using Paul Murrell’s grid framework. It is therefore generally compatible with the {gridExtra} package. Amongst other things {gridExtra} allows us to arrange two completely different graphics side by side via the grid.arrange function.\n# Create two plots\nact_bl &lt;- act_full |&gt;\n         filter(VISITNUM == 40)\n\nbase_info &lt;- ggplot(data = act_bl,\n                    aes(y = ACTTOT)) +\n  theme(legend.position = \"bottom\")\nplot1 &lt;- base_info + geom_boxplot(aes(x = SEX, fill = ARM)) \nplot2 &lt;- base_info + geom_point(aes(x = WEIGHT, colour = ARM))\n\n# Arrange side by side\nlibrary(gridExtra)\ngrid.arrange(plot1, plot2, ncol = 2)",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Utilities</span>"
+    ]
+  },
+  {
+    "objectID": "10_utilities.html#the-docorator-package",
+    "href": "10_utilities.html#the-docorator-package",
+    "title": "10  Utilities",
+    "section": "10.2 The {docorator} package",
+    "text": "10.2 The {docorator} package\nThe {docorator} package helps create production displays from R. Specifically, {docorator} saves TFLs to output files by providing the following functionality:\n\nDecorate: Surround displays with document-level headers, footers, and page numbers\nOutput: Export decorated displays to a PDF file\n\nFind out more about {docorator} here.\n\n# Load package\nlibrary(docorator) \n\n# Create figure\nmyplot &lt;- ggplot(data = theoph, aes(x = TIME, y = CONC, group = SUBJID)) +\n  geom_line()\n\n\n# Export display   \nmyplot |&gt; \n  as_docorator( \n    display_name = \"myplot\",\n    display_loc = \"my/file/path\",\n    header = fancyhead(\n      fancyrow(left = \"My Study\", center = NA, right = doc_pagenum()),\n      fancyrow(left = \"My Population\", center = NA, right = NA),\n      fancyrow(left = NA, center = \"My Plot\", right = NA)\n    ),\n    footer = fancyfoot(\n      fancyrow(left = doc_path(display_name, display_loc), center = NA, right = \"Data as of 2025-01-01\")\n    ) \n  ) |&gt; \n  render_pdf()",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Utilities</span>"
+    ]
+  },
+  {
+    "objectID": "10_utilities.html#additional-packages",
+    "href": "10_utilities.html#additional-packages",
+    "title": "10  Utilities",
+    "section": "10.3 Additional Packages",
+    "text": "10.3 Additional Packages\nThere are many, many more ggplot2 extensions available on CRAN (most beginning “gg*”). For example, we can add marginal histograms to scatter plots with ggExtra or cowplot. There are other packages that add new geoms such as wordclouds.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Utilities</span>"
+    ]
+  }
+]
