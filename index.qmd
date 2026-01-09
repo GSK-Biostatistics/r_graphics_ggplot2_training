@@ -1,0 +1,5 @@
+# Welcome! {.unnumbered}
+
+To the Introduction to the R Graphics with ggplot2 training.
+
+

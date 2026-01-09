@@ -1,0 +1,394 @@
+# Aesthetics and Groups
+
+## Using Aesthetics
+
+The power of ggplot2 comes from the ease with which we can map features of our data (i.e. information contained within variables) onto plot elements.  As discussed in the previous section variables can be mapped onto any of the following elements:
+
+- x
+- y
+- colour / color
+- alpha (transparency)
+- fill (colour for shaded areas)
+- shape
+- size
+- linetype
+- linewidth
+
+Aesthetic mappings are easy to make and ggplot2 has a number of built-in defaults to handle different data types.  **Most aesthetics work with either continuous or categorical data.  Some, eg `shape` only work with categorical data.**  To make an aesthetic mapping we call the `aes` function.  Each of the mappings above can be defined as arguments to the function.  Variables in the data act as inputs.  Here's an example using some infamous theophylline data.
+
+Note the use of `factor`.  This turns `SUBJID` from a continuous into a categorical variable.  It is required to ensure that we get a distinct colour for each, instead of gradation.  It also ensures that each subject is plotted as a different line.
+```{R libr, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(haven)
+theoph <- read_csv("data/theoph.csv")
+dm <- read_sas( "data/dm.sas7bdat")
+vs <- read_sas("data/vs.sas7bdat")
+```
+
+
+```{R aesthetics}
+ggplot(data = theoph,
+       aes(x = TIME, y = CONC, colour = factor(SUBJID))) +
+  geom_line()
+```
+
+And here's a nice example using multiple aesthetics with the in-built dataset, quakes.
+
+```{R quakes_head, echo = FALSE, purl = FALSE}
+knitr::kable(head(quakes))
+```
+
+```{R quakes_plot, fig.height = 5}
+ggplot(data = quakes,
+       aes(x = long, y = lat, alpha = -depth, colour = stations, size = mag)) +
+  geom_point()
+```
+
+
+## Defining Custom Mappings
+
+In order to change the default aesthetic mappings, we need to add a `scale_*` layer.  The scale layers control 
+
+1. How the data points are mapped to the specified aesthetic
+2. How that mapping is displayed in the axis/legend
+
+There are many different scale layers available:
+
+```{R scale_, echo = FALSE, purl = FALSE}
+apropos("^scale_")
+```
+
+### Applying Scales
+
+The scale functions can be broken down into three components:
+
+
+1. **The `scale_` piece** - that identifies the function as a scale function
+2. **The aesthetic** - to which we have mapped a variable
+3. **An appropriate scale** - these are either discrete or continuous and **must** match the data type.
+
+
+Every time we map to an aesthetic, a default scale is applied.  Which one depends on the data type.  For example, if we colour by treatment (which is discrete) `scale_colour_discrete` is applied.  As an alternative we could use `scale_colour_hue`.
+
+
+Each of the scales has a number of built in options which enable control over the name, limits and break points as they are displayed in the legend or axis (remember that x and y are aesthetic mappings in ggplot2).
+
+
+```{R scale_applying_show, eval = FALSE}
+# Create a plot
+bar_plot <- ggplot(data = dm,
+                   aes(x = ARM, fill = SEX)) +
+  geom_bar(position = "dodge") # As opposed to the default, "stack"
+# Without applying a scale
+bar_plot
+
+# Apply a scale to change the default colours
+bar_plot +
+  scale_fill_discrete("Sex") +
+  scale_x_discrete("Treatment") +
+  scale_y_continuous("Number of Subjects",
+                     breaks= seq(0, 14, by = 2)) 
+```
+
+```{R scale_applying_run, echo = FALSE, purl = FALSE, fig.width = 6, fig.height = 3}
+# Create a plot
+bar_plot <- ggplot(data = dm,
+                   aes(x = ARM, fill = SEX)) +
+  geom_bar(position = "dodge") # As opposed to the default, "stack"
+
+# Apply a scale to change the default colours
+bar_plot2 <- bar_plot +
+  scale_fill_discrete("Sex") +
+  scale_x_discrete("Treatment") +
+  scale_y_continuous("Number of Subjects", breaks= seq(0, 14, by = 2)) 
+
+gridExtra::grid.arrange(bar_plot, bar_plot2, ncol = 2)
+```
+
+### Changing the Scale
+
+As long as the data type is appropriate we can simply swap one scale for another.  This allows us to swap in a manual scale for a discrete one.
+
+```{R scale_applying, eval = FALSE}
+# Apply a manual colour scale 
+bar_plot +
+  scale_fill_manual("Sex", values = c("navy", "darkgreen")) +
+  scale_x_discrete("Treatment") +
+  scale_y_continuous("Number of Subjects", breaks = 0:8) 
+```
+
+## Aesthetics that Don't Depend on a Variable
+
+The aesthetics provide a simple framework for visualising data but sometimes we just want to colour everything in blue!  In order to make aesthetic changes that don't depend on variables we make the change in the corresponding geom layer.  For example, if we wanted blue lines then we would add `colour = "blue"` to a `geom_line` layer.  Note that when we're not working with variables, we no longer need the `aes` function.  Here's an example:
+
+
+```{R custom}
+ggplot(data = vs,
+       aes(x = WEIGHT)) +
+  geom_histogram(binwidth = 10, fill = "tan")
+```
+
+## Available Aesthetics
+
+This section serves as a quick reference for aesthetic options available in R.
+
+### Colours
+
+R has many (`r length(colours())`) built-in named colours.  These can be found by calling the colours function.
+
+```{R colours}
+# First 20 colours
+colours()[1:20]
+```
+
+It is possible to create any colour we like using "hex" (aka HTML) colour notation.  The easiest way to create a hex code is to use the `rgb` function.
+
+```{R rgb}
+# Specify red, green and blue as a proportion
+my_col <- rgb(0.1, 0.9, 0.7)
+
+# Specify red, green and blue on a standard 0 to 255 range
+my_col <- rgb(26, 230, 179, maxColorValue=255)
+
+# Draw a histogram
+ggplot(data = vs,
+       aes(x = WEIGHT)) +
+  geom_histogram(binwidth = 10, fill = my_col)
+```
+
+The `rgb` function can also be used to add transparency via the `alpha` argument.
+
+### Shapes
+
+R has a number of inbuilt shapes to choose from, as shown by the following graphic.
+
+```{R shapes, echo = FALSE, purl = FALSE, fig.width = 4, fig.height = 3}
+shape_data <- tibble(Shape = factor(1:25), 
+                        xCoords = c(rep(1:5, 5)),
+                        yCoords = c(rep(5:1, each = 5)))
+
+# Plot
+ggplot(data = shape_data,
+       aes(x = xCoords, y = yCoords, shape = Shape)) +
+  geom_point(size = 3, colour = "navy", fill = "pink") +
+  geom_text(aes(label = Shape), nudge_x = .2) +
+  scale_shape_manual(values = 1:25, guide = "none") +
+  theme_minimal() +
+  scale_x_continuous("", breaks=NULL) +
+  scale_y_continuous("", breaks=NULL) 
+
+```
+
+Shapes 21 to 25 are special symbols which have an inner `fill` aesthetic as well as the outer colour.  We can also define our own shapes using quotes, eg `shape = "$"`.
+
+
+### Line Types
+
+R also has a selected number of dotted and dashed lines to choose from.
+
+```{R linetypes, echo = FALSE, purl = FALSE, fig.width = 4, fig.height = 3}
+linetype_data <- tibble(line_type = factor(rep(1:8,2)), 
+                        xCoords = c(rep(1:2, each = 8)),
+                        yCoords = c(rep(8:1, 2)))
+
+# Plot
+ggplot() +
+  geom_line(data = linetype_data, 
+            aes(x = xCoords, y = yCoords, linetype = line_type),
+            linewidth = 3, colour = "navy") +
+  annotate("text", label = as.character(8:1), x = rep(.85,8), y = 1:8) +
+  scale_linetype_manual(values = 1:8, guide = "none") +
+  theme_minimal() +
+  scale_x_continuous("", limits = c(.8, 2), breaks=NULL) +
+  scale_y_continuous("", breaks=NULL) 
+
+```
+
+
+## EXERCISE
+
+1. Create a scatter plot of Change from baseline in ACT Total Score at Week 24 against the baseline ACT score
+    a. Vary the colour by treatment
+    b. Vary the shape of the point in order to highlight the Week 24 responders
+2. Create a histogram of ages from the demography data (`dm`) coloured in hotpink. *HINT: use the binwidth argument to control the width of the bins*
+3. Create a scatter plot of Change from baseline in ACT Total Score at Week 24 against baseline. Vary the colour by treatment and double the default size of the points
+4. Create a scatter plot of Change from baseline in ACT Total Score at Week 24 against baseline. Colour records for subjects who were on the GSK drug orange and colour everything else `navy` blue
+5. Create a line plot of the concentration values in the theophylline (`theoph`) data over time. Colour by SUBJID.
+    a. Only show time values from 4 hours onwards
+    b. Convert the y axis to a log scale and label concentrations from 1 to 10
+    
+**Extra**
+
+6. Create a bar plot of the number of subjects at each visit (inc. Screening and EW) by treatment
+    a. Label the y-axis appropriately
+    b. Scale the x-axis so that only Baseline to Week 24 visits are shown and label the axis appropriately
+    c. Label the legend appropriately
+  
+
+```{R ex_ans_aes_custom, echo = FALSE, eval = FALSE}
+#| label: ex_ans_aes_custom
+#| eval: false
+#| echo: false
+
+# Exercise Answers: Aesthetics
+# 1
+act_W24 <- act_full %>%
+  filter(VISITNUM == 60)
+# 1a
+ggplot(data = act_W24,
+       aes(x = ACTBL, y = ACTCHGBL, colour = ARM)) +
+  geom_point()
+# 1b
+ggplot(data = act_W24,
+       aes(x = ACTBL, y = ACTCHGBL, colour = ARM, 
+                                 shape = factor(ACTRESP))) +
+  geom_point()
+# 2
+ggplot(data = dm,
+       aes(x = AGE)) +
+  geom_histogram(binwidth = 5, fill = "hotpink")
+# 3
+ggplot(data = act_W24,
+       aes(x = ACTBL, y = ACTCHGBL, colour = ARM)) +
+  geom_point(size = 2) 
+# 4
+ggplot(data = act_W24,
+       aes(x = ACTBL, y = ACTCHGBL, colour = ARM)) +
+  geom_point() +
+  scale_colour_manual("Treatment", values = c("orange", "navy"))
+# 5
+base_Q4 <- ggplot(data = theoph,
+                  aes(x = TIME, y = CONC, colour = SUBJID)) +
+  geom_line() 
+# 5a
+base_Q4 + 
+  scale_x_continuous(limits = c(4, NA)) 
+# 5b
+base_Q4 + 
+  scale_x_continuous(limits = c(4, NA))  +
+  scale_y_continuous(trans = "log", breaks = 1:10) 
+# 6
+visit_labels <- c("Screening", "Baseline", paste("Week", seq(6, 24, by = 6)), "EW")
+base_Q5 <- ggplot(data = act_full, aes(x = factor(VISITNUM, labels = visit_labels), fill = ARM)) +
+  geom_bar(position = "dodge")
+# 6a 
+base_Q5 + 
+  scale_y_continuous("Number of Subjects")
+# 6b
+base_Q5 + 
+  scale_y_continuous("Number of Subjects") + 
+  scale_x_discrete("Visit", limits = visit_labels[-c(1, length(visit_labels))])
+# 6c
+base_Q5 + 
+  scale_y_continuous("Number of Subjects") + 
+  scale_x_discrete("Visit", limits = visit_labels[-c(1, length(visit_labels))]) +
+  scale_fill_discrete("Treatment")
+
+```
+
+
+## Groups
+
+We introduced the concept of aesthetics by creating a PK profile plot using some theophylline data.  In the plot we coloured by subject, but what if we weren't interested in knowing which subject was which?  We could turn off the legend using the `guide = "none"` option for `scale_colour_discrete`.  But what if we didn't want different colours at all?  For that we have the `group` option.  To see why this is needed, compare the following two graphics, with and without grouping.
+
+```{R, grouping_show, eval = FALSE}
+# No grouping
+ggplot(data = theoph,
+       aes(x = TIME, y = CONC)) +
+  geom_line() +
+  ggtitle("No Grouping")
+
+
+# Grouping
+ggplot(data = theoph,
+       aes(x = TIME, y = CONC, group = SUBJID)) +
+  geom_line() +
+  ggtitle("Grouping")
+
+```
+
+```{R, grouping_run, echo = FALSE, purl = FALSE}
+# No grouping
+ng <- ggplot(data = theoph,
+             aes(x = TIME, y = CONC)) +
+  geom_line() +
+  ggtitle("No Grouping")
+
+# Grouping
+g <- ggplot(data = theoph,
+            aes(x = TIME, y = CONC, group = SUBJID)) +
+  geom_line()+
+  ggtitle("Grouping")
+
+gridExtra::grid.arrange(ng, g, ncol = 2)
+```
+
+As well as path/line plots the `group` option is also useful when working with maps where we need to plot boundaries.  Here's a slightly more verbose example plotting states in the USA.
+
+```{R, maps_shown, fig.width = 8, fig.height = 4, eval = FALSE, echo = TRUE, purl=TRUE, warning=FALSE}
+# Get some data (map of USA with state boundaries) from the map package
+library(maps)
+states <- map_data("state")
+head(states)
+
+# Plot the data - this data has a "group" variable which enables the 
+# addition of state boundaries.
+ggplot(states,
+       aes(long, lat, group = group, fill = region)) +
+  geom_polygon(colour = "black")
+```
+
+
+```{R, maps_notshown, fig.width = 8, fig.height = 5, echo=FALSE, purl = FALSE, warning=FALSE}
+# Get some data (map of USA with state boundaries) from the map package
+suppressMessages(library(mapproj))
+states <- map_data("state")
+head(states)
+
+# Plot the data - this data has a "group" variable which enables the 
+# addition of state boundaries.
+ggplot(states,
+       aes(long, lat, group = group, fill = region)) +
+  geom_polygon(colour = "black") +
+  coord_map() +
+  theme(legend.text = element_text(size = 6))
+```
+
+## EXERCISE
+
+1. Create time profiles for the ACT Total Score each of the subjects in `act_full` and colour by treatment.
+
+**Extra**
+
+2. GSK is running an RCT in the US states of New York, New Jersey, North Carolina, Florida and California.  Demonstrate the relative coverage of USA by drawing a map of the country and colouring these states in dark green. *HINT: Use the if_else and %in% functions to create a flag in the states data*
+
+```{R ex_ans_groups, echo = FALSE, eval = FALSE, tidy = TRUE}
+#| label: ex_ans_groups
+#| eval: false
+#| echo: false
+
+# Exercise Answers: Aesthetics
+
+# 1
+ggplot(data = act_full,
+       aes(x = VISITNUM, y = ACTTOT, group = USUBJID, colour = ARM))+
+  geom_line(alpha = .4, size = 1.5)
+# 2
+# Get some data (map of USA with state boundaries) from the map package
+library(maps)
+states <- map_data("state")
+#regions <- unique(states$region)
+centres = c("new york", "new jersey", "north carolina", "florida", "california")
+states_which <- states %>%
+  mutate(recruit = if_else(region %in% centres, TRUE, FALSE))
+
+# Plot the data - this data has a "group" variable which enables the addition
+# of state boundaries.
+ggplot(states_which,
+       aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = recruit), colour = "black") +
+  scale_fill_manual("Centres", values = c("white", "darkgreen"), guide = "none")
+```
+
+
