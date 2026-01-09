@@ -16,7 +16,7 @@ In general it is best to use the `scale_*` functions when modifying axes.  Howev
 
 
 Each of these functions has a single, self-explanatory purpose.  But here's an example anyway:
-```{R libr9, echo = FALSE, purl = TRUE, message=FALSE}
+```{R libr9, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(tidyverse)
 library(haven)

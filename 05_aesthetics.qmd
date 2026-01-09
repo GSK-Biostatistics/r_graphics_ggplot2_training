@@ -17,7 +17,7 @@ The power of ggplot2 comes from the ease with which we can map features of our d
 Aesthetic mappings are easy to make and ggplot2 has a number of built-in defaults to handle different data types.  **Most aesthetics work with either continuous or categorical data.  Some, eg `shape` only work with categorical data.**  To make an aesthetic mapping we call the `aes` function.  Each of the mappings above can be defined as arguments to the function.  Variables in the data act as inputs.  Here's an example using some infamous theophylline data.
 
 Note the use of `factor`.  This turns `SUBJID` from a continuous into a categorical variable.  It is required to ensure that we get a distinct colour for each, instead of gradation.  It also ensures that each subject is plotted as a different line.
-```{R libr, echo = FALSE, purl = TRUE, message=FALSE}
+```{R libr, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(tidyverse)
 library(haven)
@@ -340,7 +340,7 @@ ggplot(states,
 ```
 
 
-```{R, maps_notshown, fig.width = 8, fig.height = 5, echo=FALSE, purl = FALSE}
+```{R, maps_notshown, fig.width = 8, fig.height = 5, echo=FALSE, purl = FALSE, warning=FALSE}
 # Get some data (map of USA with state boundaries) from the map package
 suppressMessages(library(mapproj))
 states <- map_data("state")

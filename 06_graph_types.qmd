@@ -1,7 +1,7 @@
 # Graph Types: Geoms
 
 There are many `geom` layers available to us.  Each of the geoms in the list above can be added as layers to a ggplot graphic.  Currently this is the complete list:
-```{R libr6, echo = FALSE, purl = TRUE, message=FALSE}
+```{R libr6, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(tidyverse)
 library(haven)
@@ -192,7 +192,7 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 
 There is currently no in-built functionality that enables us to quickly draw Kaplan-Meier curves.  However the underlying data is easy to generate using the survival and broom packages.  In the example below we use the `survfit` function to generate the KM estimates from the in-built `lung` data.  We extract the required coordinates using `tidy` and then use the `geom_step` function to plot the necessary stepped curve.  Deaths are added to the plot via an additional  `geom_point` layer.  We will look more closely at working with multiple `geom` layers following the exercises.
 
-```{R km}
+```{R km, warning=FALSE}
 # Import the lung data from the survival package
 library(survival)
 library(broom)
@@ -435,7 +435,7 @@ Here, we add a horizontal reference line for a clinically meaningful change from
 ```{r refline}
 # Add a red, dotted reference line to the ribbon plot
 ribbon_plot +
-  geom_hline(yintercept = 3, linetype = 3, colour = "red", size = 1.5)
+  geom_hline(yintercept = 3, linetype = 3, colour = "red", linewidth = 1.5)
 ```
 
 We can also add diagonal reference lines using `geom_abline`.  This function requires an `intercept` and a `slope`.

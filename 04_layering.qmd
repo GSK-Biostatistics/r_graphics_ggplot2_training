@@ -7,7 +7,7 @@ In this course we start by building ggplot2 graphics from scratch using the `ggp
 
 For the time being all of the plots that we create will begin with a call to the `ggplot` function.  In the current iteration of ggplot2, calling this function with no arguments simply returns a blank plot.
 
-```{R ggplot, fig.width = 4, fig.height = 3}
+```{R ggplot, fig.width = 4, fig.height = 3, warning=FALSE}
 library(ggplot2) # Or `library(tidyverse)` for full tidyverse functionality
 ggplot() # Note that the function is named "ggplot" and not "ggplot2"
 ```
@@ -36,7 +36,7 @@ Let's start with the data.  Columns in our data must be mapped to visual element
 
 
 To begin with we define these mappings within the `ggplot` function.  Later we will see how we can combine two or more different datasets by defining data mappings within other layers.  The arguments are generally self-explanatory but note the use of the `aes` function in the following example.
-```{r tidyverse, include=FALSE, collapse=TRUE, prompt = TRUE, message=FALSE}
+```{r tidyverse, include=FALSE, collapse=TRUE, prompt = TRUE, message=FALSE, warning=FALSE}
 library(tidyverse)
 pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
              TIME = rep(c(0, 1, 6, 12, 24), 2), 

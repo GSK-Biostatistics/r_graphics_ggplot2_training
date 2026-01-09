@@ -9,7 +9,7 @@ We create our panelled plots either by adding a `facet_grid` or a `facet_wrap` l
 ## Grid Layouts
 
 The `facet_grid` function creates a panelled plot where panels comparing a variable are either stacked vertically or horizontally.  We can control whether the panels are stacked vertically or horizontally by placing the variable name to the right or left of a `~` (tilde) respectively.  For example, here are age histograms for females and males plotted side by side.
-```{R libr7, echo = FALSE, purl = TRUE, message=FALSE}
+```{R libr7, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(tidyverse)
 library(haven)

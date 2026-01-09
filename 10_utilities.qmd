@@ -4,7 +4,7 @@
 
 Like lattice, ggplot2 was built using Paul Murrell's grid framework. It is therefore generally compatible with the {gridExtra} package. Amongst other things {gridExtra} allows us to arrange two completely different graphics side by side via the `grid.arrange` function.
 
-```{R libr10, echo = FALSE, purl = TRUE, message=FALSE}
+```{R libr10, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(tidyverse)
 library(haven)
@@ -40,12 +40,12 @@ grid.arrange(plot1, plot2, ncol = 2)
 
 ## The {docorator} package
 
-The {docorator} package is an internal GSK engine for creating production displays from R. Specifically, {docorator} saves TFLs to PULSAR-compliant output files by providing the following functionality:
+The {docorator} package helps create production displays from R. Specifically, {docorator} saves TFLs to output files by providing the following functionality:
 
 -   **Decorate**: Surround displays with document-level headers, footers, and page numbers
 -   **Output**: Export decorated displays to a PDF file
 
-Find out more about {docorator} [here](https://github.com/gsk-tech/docorator).
+Find out more about {docorator} [here](https://github.com/GSK-Biostatistics/docorator).
 
 ```{r, eval=FALSE}
 

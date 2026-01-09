@@ -24,7 +24,7 @@ Consider a plot of drug concentrations over time, we map concentration to the y-
 
 The tables and code below provide a visual representation of a possible mapping of some fabricated PK data.  The first table shows the original data.
 
-```{R mapping, echo = FALSE, purl = TRUE, message=FALSE}
+```{R mapping, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
 library(tidyverse); theme_set(theme_bw(base_size = 12))
 library(knitr)
 pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
