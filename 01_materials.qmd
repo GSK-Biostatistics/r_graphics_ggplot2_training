@@ -1,0 +1,37 @@
+# Course Materials
+
+These materials have been written such that you should be able to follow along without the aid of an instructor. You need to use a **non-frozen** environment to be able to install the training packages. This would be the default environment in both Domino and WARP, but here's some additional notes if needed.
+
+-   In Domino, this means starting a project and choosing "5.x Domino Standard Environment" or "Multilingual R4.x" and choosing "RStudio" as your IDE.
+
+-   In WARP, just ensure the R version selected i.e. R 4.4.1 doesn't have "Frozen" next to it.
+
+To follow the examples and attempt the course exercises you will need the data and course script.
+
+In Domino you should first create a new Domino project, called something like "R Training" which doesn't need to be connected to GitHub in any way. 
+Then launch a workspace as described above in this new project you've just created.
+
+To get the data you will need to install the `gskRtraining` package and then run the `setup_training()` function. After running the `setup_training()` function a new directory/project will be created called `gsk_R_training` in your home directory, or in the `/mnt/code/` folder if you're working in Domino. The folder will contain the data and course scripts. For this course, you will use the `ggplot2.R` script.
+
+```{r,eval = FALSE}
+ 
+# For systems using Posit Package Manager
+install.packages("gskRtraining")
+library("gskRtraining")
+setup_training()
+```
+
+The new folder should look like this: <img src="./img/new_course_data.PNG" class="border"/>
+
+or in Domino like this:
+<img src="./img/domino_folder.PNG" class="border"/>
+
+## Initialising the Course 'Project'
+
+Now you have copied the materials, please open the newly created `gsk_R_training` directory (folder) and click on the RStudio project file (`gsk_R_training.Rproj`) to open the project. This ensures all the relative paths work as expected.
+
+<img src="./img/open_proj.png" class="border"/>
+
+Now you should be able to see that the current project in the top right corner is called `gsk_R_training`.
+
+<img src="./img/project.png" class="border"/>

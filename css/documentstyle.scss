@@ -1,0 +1,72 @@
+/*-- scss:defaults --*/
+
+
+$primary:  #f36533 !default;
+$font-family-sans-serif: "GSK Precision" !default;
+
+
+
+/*-- scss:rules --*/
+h2 {
+  color: black;
+}
+
+p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1.title {
+  color: white;
+  text-align: center;
+  font-size: 30px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem !important;
+}
+
+.quarto-title-block .quarto-title-banner {
+  background: url(images/transparent_logo.png);
+  background-size: 100px;
+  background-position: left;
+  background-repeat: no-repeat;
+  padding-left: 10px;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  background-origin: content-box;
+  background-color: #f36533;
+}
+
+div#quarto-sidebar-toc-left {
+    border-right: gray solid 1px;
+}
+
+.sidebar.toc-left>*, .sidebar.margin-sidebar>* {
+     padding-top: 0; 
+}
+
+.level1 .title {
+  color: #f36533 !important; 
+  font-size: 40px;
+}
+
+.content #gsk-logo {
+  position: fixed;
+  width: 7%;
+  z-index: 999999;
+  max-width: 100px;
+  bottom: 10px;
+  right: 10px;
+}
+
+#plots img {
+  position: relative;
+  max-width: none;
+  width: 100%;
+}
+
+
+@media only screen and (max-width: 768px) {
+  .quarto-title-block .quarto-title-banner {
+    background-image: none;
+  }
+  
+}

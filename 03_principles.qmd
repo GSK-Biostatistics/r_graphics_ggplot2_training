@@ -1,0 +1,90 @@
+---
+output:
+  word_document: default
+---
+# Principles
+
+## Background and Reading
+
+The ggplot2 package is Hadley Wickham's implementation of Leland Wilkinson's [The Grammar of Graphics](http://www.springer.com/gb/book/9780387245447) book.  Hadley Wickham initially produced a white paper explaining his interpretation and implementation in R, [A Layered Grammar of Graphics](http://byrneslab.net/classes/biol607/readings/wickham_layered-grammar.pdf).  Since then Hadley has published (and re-published) his own book, [ggplot2: Elegant Graphics for Data Analysis](http://www.springer.com/gb/book/9783319242750#aboutBook).
+
+## Key Principles of *A Layered Grammar of Graphics*
+
+We don't need to read any of the above in order to be able to use ggplot2 but a basic understanding of the principles can help our understanding.  We will loosely cover these principles throughout the course but the first key concept is that data are structured such that **each variable is a column and each row is an observation**.  Today, Hadley Wickham refers to this as "tidy" data.
+
+
+
+The second key concept is a little less straightforward to understand.  This is the concept of layered graphics. The idea is that a plot is made up of various layers.  Each layer describes how various features of the plot are to be drawn.  One of the most important layers is the mapping of data to what Hadley describes as the *aesthetics*.  Under Hadley's definition, aesthetics refer not only to colour, shape and size but also the x and y coordinates.  Additional layers such as the *geom[etric]* layers control how these aesthetics are presented (for example what type of plot is actually drawn).  
+
+### Aesthetic Mappings Example
+
+Consider a plot of drug concentrations over time, we map concentration to the y-axis and time to the x-axis.  This is the same mapping, regardless of whether we draw a scatter plot or a line plot (or even box plots at each time point).  The mapping of 'concentration' to 'y' and 'time' to 'x' is an aesthetic mapping. Other aesthetic mappings might involve mapping a variable, such as the drug dose or subject, to colour or line type.  The type of plot (point or line) is controlled separately via a geometric layer.  Let's see that in practice using an example similar to that in Hadley's original paper.
+
+
+
+The tables and code below provide a visual representation of a possible mapping of some fabricated PK data.  The first table shows the original data.
+
+```{R mapping, echo = FALSE, purl = TRUE, message=FALSE}
+library(tidyverse); theme_set(theme_bw(base_size = 12))
+library(knitr)
+pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
+             TIME = rep(c(0, 1, 6, 12, 24), 2), 
+             CONC = c(0, 10, 7, 6, 3, 0, 8, 6, 3, 1))
+```
+
+```{pk data, eval=FALSE}
+pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
+             TIME = rep(c(0, 1, 6, 12, 24), 2), 
+             CONC = c(0, 10, 7, 6, 3, 0, 8, 6, 3, 1))
+```
+
+```{R mapping_kable, echo = FALSE, purl = FALSE}
+kable(pk, padding = 0)
+```
+
+
+
+We map variables to aesthetics as follows:
+
+
+
+```{R mapping2, echo = FALSE, purl = FALSE}
+library(tidyverse)
+library(forcats)
+pk_mapped <- pk %>%
+  rename(colour = SUBJID,
+         x = TIME,
+         y = CONC) %>%
+  mutate(colour = factor(colour, labels = c("red", "blue")))
+kable(pk_mapped, padding = 0)
+```
+
+
+
+Having defined our mapping, we can create various different plot types.  
+
+```{R plot_mapping, echo = FALSE, purl = FALSE, fig.width = 6, fig.height = 3}
+# Define the base mapping
+base_mapping <- ggplot(data = pk,
+                       aes(x = TIME, y = CONC, colour = SUBJID)) 
+
+# A scatter plot
+scatter_plot <- base_mapping + 
+  geom_point() +
+  ggtitle("Scatter Plot of PK Data")
+
+# A line plot
+line_plot <- base_mapping + 
+  geom_line()+
+  ggtitle("Line Plot of PK Data")
+gridExtra::grid.arrange(scatter_plot, line_plot, ncol = 2)
+```
+
+Later on in the course we will look at how the aesthetic mappings are controlled by *scale* and how we can modify our geometric mappings using statistical transformations, *stats*.
+
+
+
+Other key concepts discussed in the course are *facets* (panelled plots) and the coordinate system itself, *coord*.
+
+
+

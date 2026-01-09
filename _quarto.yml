@@ -1,0 +1,47 @@
+project:
+  type: book
+  output-dir: _book
+  
+book:
+  title: "R Graphics with ggplot2"
+  author: "Andy Nicholls"
+  date: 2024-07-12
+  repo-url: https://github.com/gsk-tech/r_graphics_ggplot2_training
+  repo-actions: [none]
+  chapters:
+    - index.qmd
+    - 01_materials.qmd
+    - 02_recap.qmd
+    - 03_principles.qmd
+    - 04_layering.qmd
+    - 05_aesthetics.qmd
+    - 06_graph_types.qmd
+    - 07_panelling.qmd
+    - 08_themes_and_styling.qmd
+    - 09_quick_plots.qmd
+    - 10_utilities.qmd
+    - 11_harp.qmd  
+
+toc: true
+toc-location: left
+toc-float: true
+      
+navbar:
+  background: primary
+  search: true
+
+format: 
+  html:
+    embed-resources: false
+    theme: css/documentstyle.scss
+    code-fold: false
+    code-summary: "Show More"
+    smooth-scroll: true
+
+sidebar: 
+  logo: images/The_Signal.png
+    
+title-block-banner: true
+
+params:
+  who: gsk

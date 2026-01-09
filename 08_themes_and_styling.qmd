@@ -1,0 +1,107 @@
+# Themes and Styling
+
+The ggplot2 default themes and stylings are generally very good.  However, there is nearly always the need to customise a plot to some degree.  In this section we look at some high level styling options that can be added as global or local (plot-specific) styling preferences.
+
+## Theme Elements
+
+So far we have seen how we can use aesthetics to modify the features of our graphic.  High level styling options such as the panels, strip headers, gridlines and legend layout are all be modified on a plot by plot basis via the `theme` function.  A full list of arguments is provided below:
+```{R libr8, echo = FALSE, purl = TRUE, message=FALSE}
+library(ggplot2)
+library(tidyverse)
+
+pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
+             TIME = rep(c(0, 1, 6, 12, 24), 2), 
+             CONC = c(0, 10, 7, 6, 3, 0, 8, 6, 3, 1))
+theoph <- read_csv("data/theoph.csv")
+
+```
+
+```{r theme_args}
+args(theme) 
+```
+
+In order to modify theme elements, we need to use one of a small number of in-built functions:
+
+
+
+- `element_text`
+- `element_line`
+- `element_rect`
+
+
+
+The choice of which to use depends on what it is we're modifying.  For example, titles and axis labels are text and so the `element_text` is required.  Axis and grid lines require the use of `element_line` and the plot area and strip header are shaded rectangles for which `element_rect` must be used.  
+
+
+
+We may also use `element_blank` to remove elements. Here is an example of a call to `theme`:
+
+
+
+
+```{r theme_eg}
+# Create a plot
+pk_plot <- ggplot(data = pk,
+                  aes(x = TIME, y = CONC)) +
+  facet_wrap( ~ SUBJID) +
+  geom_line() +
+  geom_point()
+
+# Draw the plot but modify some theme elements
+pk_plot +
+  theme(panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        strip.text = element_text(colour = "white"),
+        strip.background = element_rect(fill = "black"))
+```
+
+## Global Themes
+
+A  `ggplot` object is really just a list of instructions the explain how we would like our graphic to look.  The plot is only actually created when we ask R to print it.  If we don't specify certain arguments then defaults are used.  This is particularly true for the overall plot theme, which is called upon only at the point when the graph is drawn. We can use the `theme_set` function to change the global theme, and hence the appearance of all graphics from that point forwards.
+
+
+
+Building your own them from scratch is not recommended!  It is generally easier to begin by choosing from a small number of in-built themes.  The theme for these materials is `theme_bw`.  The package default is `theme_grey`.  Further themes can be found in the ggthemes package.  
+
+
+```{r theme_excel}
+# Set the global theme using a theme in ggthemes
+theme_set(ggthemes::theme_excel(base_size = 12))
+
+# Draw the plot (in this case one that we created earlier)
+pk_plot
+```
+
+All of the in-built themes come with options `base_size` and `base_family` which control the font size and family at a global level.  This allows us to define different global themes for different formats.  For example we might look to increase the font size for a presentation.  The global themes can also be added to individual plots as layers.
+
+## Modifying Global Themes
+
+Once we've settled upon a global theme that is close to what we want, we use the `theme_update` function to modify individual elements in the same way as we would if we were using the `theme` function.
+
+```{r theme_update}
+# Update the theme
+theme_update(panel.background = element_rect(fill = "orange"))
+
+# Re-draw the plot again
+pk_plot
+
+# Set the theme back to something a bit nicer
+theme_set(theme_bw(base_size = 12))
+```
+
+## Legend Control
+
+So far we've seen how the `scale_*` functions affect the legend content and how themes can be used to further modify the styling of the legend.  The `guide_legend` function is a single function that provides styling functionality and allows the user to override default settings and further customise the legend layout.
+
+```{r guide_legend}
+ggplot(data = theoph,
+       aes(x = TIME, y = CONC, 
+                          colour = DOSE, group = SUBJID)) + 
+  geom_line() +
+  geom_point() +
+  theme(legend.position = "bottom") +
+  guides(colour = 
+           guide_legend(title = "Dose", title.position = "left", nrow = 2, 
+                        direction = "vertical",
+                        title.theme = element_text(face = "bold", angle = 0)))
+```

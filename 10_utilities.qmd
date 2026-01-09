@@ -1,0 +1,82 @@
+# Utilities
+
+## The {gridExtra} Package
+
+Like lattice, ggplot2 was built using Paul Murrell's grid framework. It is therefore generally compatible with the {gridExtra} package. Amongst other things {gridExtra} allows us to arrange two completely different graphics side by side via the `grid.arrange` function.
+
+```{R libr10, echo = FALSE, purl = TRUE, message=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(haven)
+library(gridExtra, warn.conflicts = FALSE)
+library(readr)
+
+pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
+             TIME = rep(c(0, 1, 6, 12, 24), 2), 
+             CONC = c(0, 10, 7, 6, 3, 0, 8, 6, 3, 1))
+
+subj1 <- pk |>
+    filter(SUBJID == 1)
+act_full <- read_sas("data/actFull.sas7bdat")
+theoph <- read_csv("data/theoph.csv")
+```
+
+```{R grid.arrange}
+# Create two plots
+act_bl <- act_full |>
+         filter(VISITNUM == 40)
+
+base_info <- ggplot(data = act_bl,
+                    aes(y = ACTTOT)) +
+  theme(legend.position = "bottom")
+plot1 <- base_info + geom_boxplot(aes(x = SEX, fill = ARM)) 
+plot2 <- base_info + geom_point(aes(x = WEIGHT, colour = ARM))
+
+# Arrange side by side
+library(gridExtra)
+grid.arrange(plot1, plot2, ncol = 2)
+
+```
+
+## The {docorator} package
+
+The {docorator} package is an internal GSK engine for creating production displays from R. Specifically, {docorator} saves TFLs to PULSAR-compliant output files by providing the following functionality:
+
+-   **Decorate**: Surround displays with document-level headers, footers, and page numbers
+-   **Output**: Export decorated displays to a PDF file
+
+Find out more about {docorator} [here](https://github.com/gsk-tech/docorator).
+
+```{r, eval=FALSE}
+
+# Load package
+library(docorator) 
+
+# Create figure
+myplot <- ggplot(data = theoph, aes(x = TIME, y = CONC, group = SUBJID)) +
+  geom_line()
+
+
+# Export display   
+myplot |> 
+  as_docorator( 
+    display_name = "myplot",
+    display_loc = "my/file/path",
+    header = fancyhead(
+      fancyrow(left = "My Study", center = NA, right = doc_pagenum()),
+      fancyrow(left = "My Population", center = NA, right = NA),
+      fancyrow(left = NA, center = "My Plot", right = NA)
+    ),
+    footer = fancyfoot(
+      fancyrow(left = doc_path(display_name, display_loc), center = NA, right = "Data as of 2025-01-01")
+    ) 
+  ) |> 
+  render_pdf()
+
+```
+
+![](images/docorator.png)
+
+## Additional Packages
+
+There are many, many more ggplot2 extensions available on CRAN (most beginning "gg\*"). For example, we can add marginal histograms to scatter plots with ggExtra or cowplot. There are other packages that add new geoms such as wordclouds.

@@ -1,0 +1,583 @@
+# Graph Types: Geoms
+
+There are many `geom` layers available to us.  Each of the geoms in the list above can be added as layers to a ggplot graphic.  Currently this is the complete list:
+```{R libr6, echo = FALSE, purl = TRUE, message=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(haven)
+
+dm <- read_sas( "data/dm.sas7bdat")
+act_full <- read_sas("data/actFull.sas7bdat")
+vs <- read_sas("data/vs.sas7bdat")
+pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
+             TIME = rep(c(0, 1, 6, 12, 24), 2), 
+             CONC = c(0, 10, 7, 6, 3, 0, 8, 6, 3, 1))
+```
+
+```{R geom_, echo = FALSE, purl = FALSE}
+apropos("^geom_")
+```
+
+The general framework remains the same whichever geom we use.  In this section we look more closely at some of the everyday geoms that we use and some of the additional options available for tailoring our graphics.
+
+## Histograms and Bar Charts
+
+The standard way of displaying a single continuous variable is via a histogram.  To do so we use a `geom_histogram` layer, remembering to specify either the number of bins, `bins` or the width of the bins, `binwidth`.  Note that the `fill` aesthetic controls the colour of the bars.  By default the bars have no border and we may wish to add this using the `colour` aesthetic.
+
+```{R histogram}
+ggplot(data = dm,
+       aes(x = AGE)) +
+  geom_histogram(bins = 6, fill = "orange", alpha = .5, colour = "black")
+```
+
+In the ggplot framework we can easily switch the histogram for a density plot, which plots the kernel density estimate.  Note that the distribution is only estimated within the range of the data which has the effect of truncating the plot at either end.
+
+```{R density}
+ggplot(data = dm,
+       aes(x = AGE)) +
+  geom_density(fill = "blue", alpha = .5)
+```
+
+When working with discrete data, for which we wish to display counts of various categories, we can use `geom_bar` to create a bar plot.  By default, `geom_bar` counts the number of records in each category so if we have pre-summarised data then we need to use the `stat = identity` option.
+
+```{R bar}
+# Count subjects "manually"
+arm_count <- dm %>%
+  group_by(ARM) %>%
+  summarise(`Number of Subjects` = length(USUBJID))
+ggplot(data = arm_count,
+       aes(x = ARM, y = `Number of Subjects`)) +
+  geom_bar(stat = "identity", fill = "gold")
+```
+
+### `stat_` Functions
+
+We won't cover the `stat` functions on this course in any detail but any `geom` that presents summarised data is underpinned by a stat function.  The `stat` functions simply summarise the data and output a summarised dataset that is suitable for the chosen `geom`.  Setting `stat = "identity"` allows us to provide our own pre-summarised data, so long as it is in the right form.  Writing custom `stat` functions is not advised for a beginner!
+
+### Dodge, Stack and Fill
+
+If we choose to fill by another discrete variable, the default behaviour is to create a stacked bar chart.  We can switch to a "dodged" (side-by-side) display using the `position` argument (`position = "dodge"`).  Another option is to set `position = "fill"`, which creates a proportional representation of the data.  Bars may be further manipulated using the `width` argument for which numbers less than 1 result in thinner bars.
+
+```{R bar_dodge_show, eval = FALSE}
+base_plot <- ggplot(data = dm,
+                    aes(x = ARM, fill = SEX)) 
+  
+base_plot + geom_bar(position = "dodge", width = .4)
+base_plot + geom_bar(position = "stack", width = .4)
+base_plot + geom_bar(position = "fill", width = .4)
+```
+
+```{R bar_dodge_run, echo = FALSE, fig.height = 3, fig.width = 6}
+base_plot <- ggplot(data = dm,
+                    aes(x = ARM, fill = SEX)) +
+  theme_bw(base_size = 10) +
+  theme(legend.position = "bottom")
+  
+p1 <- base_plot + geom_bar(position = "dodge") + ggtitle("Dodge")
+p2 <- base_plot + geom_bar(position = "stack") + ggtitle("Stack")
+p3 <- base_plot + geom_bar(position = "fill") + ggtitle("Fill")
+
+gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
+```
+
+Each of the three positioning options above has a corresponding `position_` function that can be supplied instead in order to make use of additional functionality.  Below, `position_dodge` is used in order to add a space between the bars.  Confusingly the space between bars is controlled by an argument, `width`.
+
+```{R position_dodge}
+base_plot + geom_bar(position = position_dodge(width = .5), width = .4)
+```
+
+## Boxplots
+
+Creating a simple boxplot is very straightforward.  The only consideration is the data type.  For example, here is a (not very useful  -see explanation after plot) boxplot of ACT Total Score by visit.  
+
+
+```{R boxplot_bad, warning=FALSE}
+# Subset to planned visits
+act_full_planned <- act_full %>% filter(20 <= VISITNUM, VISITNUM <= 60)
+
+ggplot(data = act_full_planned,
+       aes(x = VISITNUM, y = ACTTOT)) +
+  geom_boxplot()
+```
+
+The problem is that that the variable, `VISITNUM` is continuous.  In order to create separate boxplots at each visit we require discrete data.  It is best to change this within the code by changing VISITNUM to a character or factor variable.  We can also change the data type directly within the call to `aes` .  However, this results in less readable code and undesirable axis labels.  
+
+```{R boxplot}
+# Create some nicer visit labels
+visit_labels <- c("Baseline", paste("Week", seq(6, 24, 6)))
+
+# An on-the-fly fix
+ggplot(data = act_full_planned, 
+       aes(x = factor(VISITNUM, labels = visit_labels), y = ACTTOT)) +
+  geom_boxplot()
+```
+
+As a boxplot is an area, we usually vary the `fill` aesthetic if we wish to compare, say, treatments.
+
+```{R boxplot_trt}
+# Create some nicer visit labels
+visit_labels <- c("Baseline", paste("Week", seq(6, 24, 6)))
+
+# Fill by treatment
+ggplot(data = act_full_planned, 
+       aes(x = factor(VISITNUM, labels = visit_labels), 
+           y = ACTTOT, fill = ARM)) +
+  geom_boxplot()
+```
+
+### Boxplot Options
+
+Due to the relative complexity of a boxplot the geom_boxplot function has several additional options that allow for greater customisation of the plot.  Some of the key features are listed below.
+
+
+
+- `outlier.colour`, `outlier.shape`, `outlier.size`, etc. to control the appearance of outliers
+- `coef` - length of the whiskers as multiple of IQR (default = 1.5)
+- `notch` and `notchwidth` - add indentation
+
+
+
+It's worth noting that the definition of how a boxplot should be drawn varies from software to software.  As taken from the help file, "The lower and upper hinges [end of the box] correspond to the first and third quartiles (the 25th and 75th percentiles)."  As an alternative we might consider specifying `stat = "identity"` and generating our summary.
+
+### Other Available Geoms for Distributions
+
+As an alternative to the boxplot, `geom_violin` instead plots the empirical distribution in the boxplot style.
+
+
+
+On two-dimensional plots the `geom_rug` function adds a barcode-like representation of the marginal distributions.
+
+## Paths and Lines 
+
+There are two functions for drawing a line graph in ggplot2: `geom_path` and `geom_line`.  The difference is the order that the points are plotted.  The `geom_path` function follows the order of the data while the `geom_line` plots points in the order they appear in the x-axis, i.e. from left to right.  It is therefore more suited to plotting time-variant data.  So long as we account for the order and structures within our data the choice is largely arbitrary.
+
+
+
+The difference can be seen in the following plots.
+
+```{R path_line, eval = FALSE}
+random_data <- tibble(x = c(4,6,2,4,2,4,1),
+                     y = c(7,2,1,6,3,8,5))
+base_plot <- ggplot(data = random_data,
+                    aes(x = x, y = y)) 
+
+# Path
+base_plot + geom_path() +
+  ggtitle("Path Plot of \"Random\" Data")
+
+# Line
+base_plot + geom_line() +
+  ggtitle("Line Plot of \"Random\" Data")
+```
+
+```{R path_line2, echo = FALSE, purl = FALSE}
+random_data <- tibble(x = c(4,6,2,4,2,4,1),
+                     y = c(7,2,1,6,3,8,5))
+base_plot <- ggplot(data = random_data,
+                    aes(x = x, y = y)) 
+
+# Path
+p1 <- base_plot + geom_path() +
+  ggtitle("Path Plot of \"Random\"\nData")
+
+# Line
+p2 <- base_plot + geom_line() +
+  ggtitle("Line Plot of \"Random\"\nData")
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+
+## Kaplan Meier Plots
+
+There is currently no in-built functionality that enables us to quickly draw Kaplan-Meier curves.  However the underlying data is easy to generate using the survival and broom packages.  In the example below we use the `survfit` function to generate the KM estimates from the in-built `lung` data.  We extract the required coordinates using `tidy` and then use the `geom_step` function to plot the necessary stepped curve.  Deaths are added to the plot via an additional  `geom_point` layer.  We will look more closely at working with multiple `geom` layers following the exercises.
+
+```{R km}
+# Import the lung data from the survival package
+library(survival)
+library(broom)
+head(lung)
+
+# Create a KM fit
+cox_mod <- survfit(Surv(time, status) ~ ph.ecog , data=lung)
+km_lung <- tidy(cox_mod)
+
+# Plot the data
+ggplot(data = km_lung, 
+       aes(x = time, y = estimate, colour = strata)) +
+  geom_step() +
+  # Censoring - more on multiple layers coming up
+  geom_point(aes(shape = factor(n.censor)), size = 4) +
+  # Mark deaths with a + but don't add to the legend
+  scale_shape_manual(values = c("", "+"), guide = 'none')
+```
+
+
+
+## EXERCISE
+
+1. Create a density plot of age using the demography data
+    a. Shade the area by treatment
+    b. Adjust the transparency so that the full curves can be seen for both treatments
+2. Create a boxplot of Change from baseline in ACT Total Score at Week 24 by Sex
+    a. Colour (fill) by treatment
+    b. Change the shape used for outliers to an empty circle
+3. Create a violin plot of Change from baseline in ACT Total Score at Week 24 by Sex
+4. Create a bar plot of the number of observations for each treatment group, at each visit in the ACT data (excluding early withdrawals).
+
+**Extra**
+
+5. Narrow the boxplots from question (2) and separate so that none of the boxplots touch each other
+
+
+```{R ex_ans_geoms, echo = FALSE, eval = FALSE}
+#| label: ex_ans_geoms
+#| eval: false
+#| echo: false
+
+# Exercise Answers: Graph Types: Geoms
+
+# 1
+ggplot(data = dm,
+       aes(x = AGE)) +
+  geom_density()
+#1a
+ggplot(data = dm,
+       aes(x = AGE, fill = ARM)) +
+  geom_density()
+#1b
+ggplot(data = dm,
+       aes(x = AGE, fill = ARM)) +
+  geom_density(alpha = .5)
+#2
+act_W24 <- act_full %>%
+  filter(VISITNUM == 60)
+
+ggplot(data = act_W24,
+       aes(x = SEX, y = ACTCHGBL)) +
+  geom_boxplot()
+# 2a
+ggplot(data = act_W24,
+       aes(x = SEX, y = ACTCHGBL, fill = ARM)) +
+  geom_boxplot()
+# 2b
+ggplot(data = act_W24,
+       aes(x = SEX, y = ACTCHGBL, fill = ARM)) +
+  geom_boxplot(outlier.shape=1)
+# 3
+ggplot(data = act_W24,
+       aes(x = SEX, y = ACTCHGBL, fill = ARM)) +
+  geom_violin()
+# 4
+ggplot(data = filter(act_full, VISITNUM <= 60),
+       aes(x = VISITNUM, fill = ARM)) +
+  geom_bar(position = "dodge")
+# 5
+ggplot(data = act_W24,
+       aes(x = SEX, y = ACTCHGBL, fill = ARM)) +
+  geom_boxplot(position = position_dodge(width = .5), width = .4)
+```
+
+
+## Combining Geoms
+
+Before we look at any more graph types, let's look briefly at how the geoms that we are creating may be used together.  The layered approach allows us to combine geoms by adding them as separate layers.  For example we might wish to add symbols as discrete time points when plotting a line graph.
+
+
+```{R geom_combine}
+ggplot(data = pk,
+       aes(x = TIME, y = CONC, group = SUBJID)) +
+  geom_line() +
+  geom_point(colour = "red")
+```
+
+### Mapping Data Within Geom Layers
+
+Until now we have always called the `aes` function from within the `ggplot` function.  However it is also possible to define our mappings within the geom layers themselves.  Consider the previous example.
+
+```{R geom_combine_repeat, eval = FALSE}
+ggplot(data = pk,
+       aes(x = TIME, y = CONC, group = SUBJID)) +
+  geom_line() +
+  geom_point(colour = "red")
+```
+
+Here we specified a `group` option that is not required for `geom_point`.  Thankfully the unnecessary information was ignored.  However, to be more specific we could have defined the grouping within the `geom_line` layer.
+
+```{R geom_combine_alt, eval = FALSE}
+ggplot(data = pk,
+       aes(x = TIME, y = CONC)) +
+  geom_line(aes(group = SUBJID)) +
+  geom_point(colour = "red")
+```
+
+It could be argued that this is technically more robust code, although it actually involved some additional typing since we had to call the `aes` function again within the `geom_line` layer.
+
+
+
+In most cases, where we define our mappings makes no difference and there are no general conventions on where it should be defined.  However, it is worth noting that if we define a mapping in the `ggplot` layer it is inherited by subsequent layers.  Whereas if we define a mapping within a `geom` layer it applies only to that layer.
+
+### Working with Multiple Datasets
+
+In addition to the mappings, we may also move the `data` argument to the `geom` layers.  This enables us to use multiple datasets within the same graph.  A common example of this is adding summary information to a plot.  Here is a very simple example using our two-subject PK data.
+
+```{R multi_data}
+# Find the average at each time of our two pk subjects
+pk_ave <- pk %>%
+  group_by(TIME) %>%
+  summarise(CONC = median(CONC))
+
+# Plot the original data and the average
+ggplot() +
+  geom_point(data = pk,
+             aes(x = TIME, y = CONC)) +
+  geom_line(data = pk_ave,
+            aes(x = TIME, y = CONC), colour = "red") 
+
+```
+
+
+
+## Error Bars and Ribbons
+
+### Error Bars
+
+Typically, we draw error bars at specific time points along an x axis.  At each time point we require a lower and upper bound (in ggplot, error bars have no midpoint, that is achieved using other geoms).  Rather than mapping a single variable to a `y` aesthetic we map each of our two variables to a `ymin` and a `ymax` aesthetic respectively.
+
+
+
+In the following example we will plot some standard errors for the change from baseline in ACT Total Scores at each (post-baseline) time point.
+
+```{r errorbar}
+# Summarise the ACT data
+act_post_bl_summary <- act_full %>%
+  # Post BL data
+  filter(30 <= VISITNUM, VISITNUM <= 60) %>%
+  # Mean and standard errors for each visit
+  group_by(VISITNUM) %>%
+  summarise(Mean = mean(ACTCHGBL),
+            N = length(USUBJID),
+            SE = sd(ACTCHGBL) / sqrt(N),
+            LowerSE = Mean - SE,
+            UpperSE = Mean + SE)
+
+# Now the plotting bit
+errorbar_eg <- ggplot(data = act_post_bl_summary, 
+                      aes(x = VISITNUM, ymin = LowerSE, ymax = UpperSE)) +
+  geom_errorbar(width = 0.8) # NOTE the 'width' argument
+errorbar_eg
+```
+
+Note the use of the width argument.  By default the caps on the bars can be quite wide and we will almost always wish to decrease the width from the default value.
+
+### Combining Error Bars with Other "geoms"
+
+The geom_errorbar function is very flexible and can be combined with either continuous or discrete data.  Here's the previous example again with a line joining up the mean values.
+
+```{r errorbar_line}
+# Add lines to our previous example
+errorbar_eg +
+  geom_line(aes(y = Mean)) +
+  geom_point(aes(y = Mean), colour = "orange", size = 2) +
+  scale_y_continuous("Mean (+/- SE)")
+```
+
+And here's an alternative of adding error bars to a bar chart.
+
+```{r errorbar_bar}
+# Add a bar chart underneath the error bars 
+# Note: this puts bars on top of the error bars
+#       in practice swap the order
+errorbar_eg +
+  geom_bar(stat = "identity", aes(y = Mean), alpha = .5, fill = "maroon") +
+  scale_y_continuous("Mean (+/- SE)")
+```
+
+### Ribbons
+
+Where the x-axis is time (and the time points are equally spaced) it can make sometimes be preferable to draw a "ribbon" instead of bars.  To achieve this we simply swap `geom_errorbar` for `geom_ribbon`.
+
+```{r ribbon}
+ribbon_plot <- ggplot(data = act_post_bl_summary, 
+       aes(x = VISITNUM, ymin = LowerSE, ymax = UpperSE)) +
+  geom_ribbon(fill = "lightblue", alpha = .2) +
+  geom_line(aes(y = Mean)) +
+  geom_point(aes(y = Mean), colour = "orange", size = 2) +
+  scale_y_continuous("Mean (+/- SE)")
+
+ribbon_plot
+```
+
+### Other Geoms for Ranges
+
+Other geoms for drawing ranges include:
+
+
+
+- `geom_linerange` for drawing a vertical interval line at a single x value
+- `geom_pointrange` for drawing a vertical interval line at a single x value with a point in the middle
+- `geom_errorbarh` for plotting horizontal error bars as we might see in a forest plot.
+- `geom_crossbar` - creates output much like the box section of a boxplot, thereby allowing us to define our own boxplots.
+
+## Reference Lines and Smoothers
+
+The ggplot package contains several geoms for adding reference lines.  To start with let's look at the simplest form of reference line, a vertical (or horizontal) line.
+
+
+
+- For vertical lines we use `geom_vline(xintercept = ... )`
+- For horizontal lines we use `geom_hline(yintercept = ... )`
+
+
+
+Here, we add a horizontal reference line for a clinically meaningful change from baseline in the ACT Total Score.
+
+```{r refline}
+# Add a red, dotted reference line to the ribbon plot
+ribbon_plot +
+  geom_hline(yintercept = 3, linetype = 3, colour = "red", size = 1.5)
+```
+
+We can also add diagonal reference lines using `geom_abline`.  This function requires an `intercept` and a `slope`.
+
+```{r abline}
+# Create a scatter plot of weight against height.
+scat <- ggplot(data = vs,
+               aes(x = HEIGHT, y = WEIGHT)) +
+  geom_point()
+
+# Use a linear model to get a best-fit line
+a_model <- lm(data = vs, WEIGHT ~ HEIGHT)
+int <- coef(a_model)["(Intercept)"]
+slope <- coef(a_model)["HEIGHT"]
+
+# Add a reference line
+scat + 
+  geom_abline(intercept=int, slope = slope, colour = "darkgreen", 
+              size = 1.5)
+```
+
+### Smooth Lines
+
+It is also fairly straightforward to fit different smoothers using `geom_smooth`.  For less than 1,000 observations the default is to fit a loess smoother.  Other options are available via the `method` argument.  These include `lm` for linear model and `gam` for a generalised additive model (the default for >1,000 observations).
+
+```{r smooth}
+# Create a scatter plot of weight against height.
+ggplot(data = vs,
+       aes(x = HEIGHT, y = WEIGHT)) +
+  geom_point() +
+  geom_smooth(colour = "hotpink3", size = 1.5)
+```
+
+## Text
+
+The `geom_text` function requires `x` and `y` coordinates and a `label` argument (i.e. the text that we wish to add).  The coordinates and label can be entered manually or we could use a dataset.  
+
+### Manual Annotation
+
+Here is an example that uses text to add to our earlier ribbon plot.
+
+```{R textLabel}
+ribbon_plot +
+  geom_hline(yintercept = 3, linetype = 3, colour = "red") +
+  geom_text(x = 60, y = 3, colour = "red",
+            label = "Clinically\nmeaningful\ndifference",
+            hjust = 1, vjust = 1)
+```
+
+In addition to the three base arguments we changed the colour and used the `hjust` and `vjust` arguments to adjust the horizontal and vertical alignment of the text relative to the coordinates we provide.  Both arguments take values in the 0:1 range.  In the plot above we set both parameters to be equal to one, meaning that the text is right- and top-aligned.
+
+
+
+We can also control the rotation of the text using the `angle` argument.  And we can even control the line spacing via the `lineheight` argument.
+
+### Automated Text Labelling
+
+Using a data frame it is very easy to add automated text labels to our plot.  Arguments `nudge_x` and `nudge_y` provide further assistance  when labelling points.
+
+```{R textLabel_auto}
+ggplot(data = pk,
+       aes(x = TIME, y = CONC, group = SUBJID)) +
+  geom_line(alpha = .4) +
+  geom_point() +
+  geom_text(aes(label = SUBJID), nudge_x = .5, nudge_y = .5)
+```
+
+
+
+
+## EXERCISE
+
+1. Re-create the Change from Baseline in ACT Total Score over time error bar example but separate out the two treatment groups. *HINT: Use the code in the accompanying course R script to save time*
+    a. Offset the treatment groups so that the intervals don't overlap. *HINT: Use `position_dodge()`*
+    b. Add points and lines through the means and ensure that they line up with the intervals
+
+**Extra**
+
+2. Create a boxplot of Change from baseline in ACT Total Score at Week 24 by Sex and label the outlier(s) with their subject number
+3. Fit a linear model of the change from baseline in Act Total Score with explanatory variables of treatment, age, gender, visit.  Now create a QQ plot of the quantiles from the model.  *HINT: use geom_qq*.
+
+```{R ex_ans_geom2, echo = FALSE, eval = FALSE}
+#| label: ex_ans_geoms2
+#| eval: false
+#| echo: false
+
+# Exercise Answers: Graph Types: Geoms 2
+
+# 1
+# Summarise the ACT data
+act_post_bl_summary <- act_full %>%
+  # Post BL data
+  filter(30 <= VISITNUM, VISITNUM <= 60) %>%
+  # Mean and standard errors for each visit
+  group_by(ARM, VISITNUM) %>%
+  summarise(Mean = mean(ACTCHGBL),
+            N = length(USUBJID),
+            SE = sd(ACTCHGBL) / sqrt(N),
+            LowerSE = Mean - SE,
+            UpperSE = Mean + SE)
+ggplot(data = act_post_bl_summary, 
+       aes(x = VISITNUM, ymin = LowerSE, ymax = UpperSE, colour = ARM)) +
+  geom_errorbar(width = 0.8) # NOTE the 'width' argument
+# 1a
+ggplot(data = act_post_bl_summary, 
+       aes(x = VISITNUM, ymin = LowerSE, ymax = UpperSE, y = Mean,
+           colour = ARM)) +
+  geom_errorbar(width = 1, position = position_dodge(width = .8)) +
+  geom_point(position = position_dodge(width = .8)) +
+  geom_line(position = position_dodge(width = .8))
+# 2
+week24 <- act_full %>%
+  filter(VISITNUM == 60) %>%
+  group_by(SEX) %>%
+  # Function to identify outliers based on the boxplot methodology for ggplot2
+  mutate(isOutlier = ACTCHGBL < quantile(ACTCHGBL, 0.25) - 1.5 * IQR(ACTCHGBL) | 
+           ACTCHGBL > quantile(ACTCHGBL, 0.75) + 1.5 * IQR(ACTCHGBL))
+
+ggplot(data = week24,
+       aes(x = SEX, y = ACTCHGBL)) +
+  geom_boxplot(outlier.shape=NA) +
+  geom_text(data = filter(week24, isOutlier), aes(label = USUBJID, colour = isOutlier)) +
+  scale_colour_manual(values ="black", guide = "none")
+
+# 3
+act_mod <- lm(data = act_full, ACTCHGBL ~ ARM + AGE + SEX + VISIT)
+resid_data <- augment(act_mod)
+
+ggplot(data = resid_data) + 
+  geom_qq(aes(sample = .resid)) 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

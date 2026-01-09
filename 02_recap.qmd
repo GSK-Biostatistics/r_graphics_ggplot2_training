@@ -1,0 +1,65 @@
+# Recap
+
+```{r setup, include=FALSE, collapse=TRUE, prompt = TRUE, purl = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.width = 5, fig.height = 3,
+                      prompt = TRUE, comment = NA, fig.align="center")
+```
+
+```{r setup2, include=FALSE, collapse=TRUE, prompt = TRUE, message=FALSE}
+library(tidyverse)
+library(mapproj)
+theoph <- read_csv("data/theoph.csv")
+```
+
+## Pre-requisites
+
+- This course assumes a working level of R.
+- Ideally you should have attended "Introduction to R and the tidyverse" or an equivalent R course prior to taking this course
+
+If you have never used R you should not be on this course!
+
+## Things you should know about
+
+It is assumed that you are familiar with the following
+
+1. Vectors
+2. Data frames
+3. Importing and exporting data
+4. Usage of functions for summarising / aggregating data (mean, sd etc)
+
+## The magrittr Pipe
+
+If you've not used R recently then you probably haven't come across the magrittr pipe, `%>%`.  R programming has changed a lot and the pipe is now very common.  The pipe is essentially an alternative to nesting that allows functions to be chained together: the output of one function becomes the first input of the next.
+
+
+
+To see how it works we will use some theophylline data.  The aim here is to extract baseline concentration values for each subject.  We will use `filter` and `select`.  Without the pipe there are two ways we might do this.
+
+```{R magrittr_without}
+# tidyverse loads the dplyr package for filter and select (and the pipe)
+library(tidyverse) 
+# Start with the theoph data
+head(theoph)
+
+# Method 1: nesting (this is horrible)
+bl_conc <- select(filter(theoph, TIME == 0), SUBJID, CONC)
+
+# Method 2: traditional stepwise approach
+# (better, but leaves us with an object, bl_rows, that we may not want)
+bl_rows <- filter(theoph, TIME == 0)
+bl_conc <- select(bl_rows, SUBJID, CONC)
+
+# Now let's look at the data
+head(bl_conc)
+```
+
+The magrittr pipe provides a more readable syntax, similar to method 2 but avoids the intermediary dataset.
+
+```{R magrittr_with}
+bl_conc <- theoph %>%      # Take the theoph data, then ...
+  filter(TIME == 0) %>%   # ... filter the rows, then ... 
+  select(SUBJID, CONC)    # ... select columns
+
+# Now let's look at the data
+bl_conc %>% head
+```
