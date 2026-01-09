@@ -4,14 +4,12 @@ This repo contains the source for the R materials deployed on [GitHub Pages](htt
 
 # Editing the Materials
 
-NEVER edit the 'main' or 'preview' branch directly.  Always create a new branch by forking the 'preview' branch and work on changes there.
+NEVER edit the 'main' branch directly.  Always create a new branch by forking the 'main' branch and work on changes there.
 
 1. Make your updates to the qmd files
 2. Render/serve the book locally
 3. Generate the course script
-4. Create the manifest file 
 5. Commit and push changes
-6. Copy the new course script to the shared location on WARP (if you have permission, else contact the directory owner)
 
 ## Updating the Qmd files
 
@@ -30,7 +28,7 @@ Quarto Render
 
 ## Generating the course script
 
-The course script is contained in `full_script.R`.  This is file must NEVER BE UPDATED MANUALLY.  To update the course script, run Create_full_script.R:
+The course script is contained in `full_script.R`.  This file must NEVER BE UPDATED MANUALLY.  To update the course script, run `Create_full_script.R`:
 
 ```{r}
 source("create_full_script.R", echo=TRUE)
