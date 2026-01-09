@@ -11,8 +11,7 @@ file_names <- c(
   "07_panelling",
   "08_themes_and_styling",
   "09_quick_plots",
-  "10_utilities",
-  "11_harp"
+  "10_utilities"
 )
 
 # Initialize an empty string to store the combined content
@@ -32,9 +31,9 @@ for (file_name in file_names) {
   
   # Read the content of the current file
   file_content <- readLines(output)
-  # 
-  # # Add the file name as a comment before the content
-  # combined_content <- paste(combined_content, paste0("\n\n#### ", output, "\n"))
+   
+  # Add the file name as a comment before the content
+  combined_content <- paste(combined_content, paste0("\n\n#### ", output, "\n"))
   
   # Append the content of the current file to combined_content
   combined_content <- paste(combined_content, "\n\n", paste(file_content, collapse = "\n"), sep = "\n")

@@ -34,7 +34,7 @@ download_data <- function(owner, repo, path, branch = "main", dest_dir = "direct
   }
   
   # 3. Download the root files (into the BASE folder)
-  root_files <- c("full_script.R", "intro_to_r_and_the_tidyverse_training.Rproj")
+  root_files <- c("full_script.R", "r_graphics_ggplot2_training.Rproj")
   
   message("--- Setting up Project Root ---")
   for (f in root_files) {
