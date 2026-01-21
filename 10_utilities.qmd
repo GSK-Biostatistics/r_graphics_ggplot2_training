@@ -12,7 +12,7 @@ The power of {patchwork} lies in its operator-based syntax:
 
 -   () : Groups plots together to create complex, nested layouts.
 
-Find out more about {patchwork} [here](https://patchwork.data-imaginist.com/articles/patchwork.html) and see some examples that utilise {patchwork} in the [R Graphics Library](https://warp-view-cloud.gsk.com/STAR/graphics-library/).
+Find out more about {patchwork} [here](https://patchwork.data-imaginist.com/articles/patchwork.html).
 
 ```{R libr10, echo = FALSE, purl = TRUE, message=FALSE}
 library(ggplot2)
