@@ -92,6 +92,7 @@ bar_plot +
 ```
 
 ```{R scale_applying_run, echo = FALSE, purl = FALSE, fig.width = 6, fig.height = 3}
+library(patchwork)
 # Create a plot
 bar_plot <- ggplot(data = dm,
                    aes(x = ARM, fill = SEX)) +
@@ -103,7 +104,8 @@ bar_plot2 <- bar_plot +
   scale_x_discrete("Treatment") +
   scale_y_continuous("Number of Subjects", breaks= seq(0, 14, by = 2)) 
 
-gridExtra::grid.arrange(bar_plot, bar_plot2, ncol = 2)
+bar_plot | bar_plot2
+
 ```
 
 ### Changing the Scale
@@ -321,7 +323,7 @@ g <- ggplot(data = theoph,
   geom_line()+
   ggtitle("Grouping")
 
-gridExtra::grid.arrange(ng, g, ncol = 2)
+ng | g
 ```
 
 As well as path/line plots the `group` option is also useful when working with maps where we need to plot boundaries.  Here's a slightly more verbose example plotting states in the USA.
