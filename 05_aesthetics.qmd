@@ -21,6 +21,7 @@ Note the use of `factor`.  This turns `SUBJID` from a continuous into a categori
 library(ggplot2)
 library(tidyverse)
 library(haven)
+library(patchwork)
 theoph <- read_csv("data/theoph.csv")
 dm <- read_sas( "data/dm.sas7bdat")
 vs <- read_sas("data/vs.sas7bdat")
@@ -92,7 +93,6 @@ bar_plot +
 ```
 
 ```{R scale_applying_run, echo = FALSE, purl = FALSE, fig.width = 6, fig.height = 3}
-library(patchwork)
 # Create a plot
 bar_plot <- ggplot(data = dm,
                    aes(x = ARM, fill = SEX)) +
