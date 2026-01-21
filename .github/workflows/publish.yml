@@ -21,7 +21,7 @@ jobs:
           
       - name: Install dependencies
         run: |
-          install.packages(c("tidyverse", "haven", "ggplot2", "gridExtra", "docorator", "survival", "maps", "mapproj", "broom", "ggthemes")) 
+          install.packages(c("tidyverse", "haven", "ggplot2", "patchwork", "docorator", "survival", "maps", "mapproj", "broom", "ggthemes")) 
         shell: Rscript {0}
 
       - name: Set up Quarto
