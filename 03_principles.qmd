@@ -64,6 +64,7 @@ kable(pk_mapped, padding = 0)
 Having defined our mapping, we can create various different plot types.  
 
 ```{R plot_mapping, echo = FALSE, purl = FALSE, fig.width = 6, fig.height = 3}
+library(patchwork)
 # Define the base mapping
 base_mapping <- ggplot(data = pk,
                        aes(x = TIME, y = CONC, colour = SUBJID)) 
@@ -76,8 +77,9 @@ scatter_plot <- base_mapping +
 # A line plot
 line_plot <- base_mapping + 
   geom_line()+
-  ggtitle("Line Plot of PK Data")
-gridExtra::grid.arrange(scatter_plot, line_plot, ncol = 2)
+  ggtitle("Line Plot of PK Data") 
+
+scatter_plot | line_plot
 ```
 
 Later on in the course we will look at how the aesthetic mappings are controlled by *scale* and how we can modify our geometric mappings using statistical transformations, *stats*.
