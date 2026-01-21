@@ -845,8 +845,6 @@ qplot(data = bl_data, x = AGE, y = ACTTOT, colour = I("blue"))
 library(ggplot2)
 library(tidyverse)
 library(haven)
-library(gridExtra, warn.conflicts = FALSE)
-library(readr)
 
 pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
              TIME = rep(c(0, 1, 6, 12, 24), 2), 
@@ -854,23 +852,32 @@ pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
 
 subj1 <- pk |>
     filter(SUBJID == 1)
-act_full <- read_sas("data/actFull.sas7bdat")
-theoph <- read_csv("data/theoph.csv")
+act_full <- read_sas("data/actFull.sas7bdat") 
+
 
 # Create two plots
 act_bl <- act_full |>
-         filter(VISITNUM == 40)
+  filter(VISITNUM == 40)
 
-base_info <- ggplot(data = act_bl,
-                    aes(y = ACTTOT)) +
+base_info <- ggplot(data = act_bl, aes(y = ACTTOT)) +
   theme(legend.position = "bottom")
-plot1 <- base_info + geom_boxplot(aes(x = SEX, fill = ARM)) 
-plot2 <- base_info + geom_point(aes(x = WEIGHT, colour = ARM))
 
-# Arrange side by side
-library(gridExtra)
-grid.arrange(plot1, plot2, ncol = 2)
+plot1 <- base_info +
+  geom_boxplot(aes(x = SEX, fill = ARM))  +
+  labs(fill = "ARM") # Modify legend label
+plot2 <- base_info +
+  geom_point(aes(x = WEIGHT, colour = ARM)) +
+  labs(colour = "ARM") # Modify legend label
 
+# Arrange side by side using patchwork syntax
+library(patchwork)
+
+# The '|' operator places plots side-by-side
+plot1 | plot2
+
+# collect the axis titles
+(plot1 | plot2) +
+  plot_layout(axis_titles = "collect")
 
 # 
 # # Load package

@@ -1,15 +1,23 @@
 # Utilities
 
-## The {gridExtra} Package
+## The {patchwork} Package
 
-Like lattice, ggplot2 was built using Paul Murrell's grid framework. It is therefore generally compatible with the {gridExtra} package. Amongst other things {gridExtra} allows us to arrange two completely different graphics side by side via the `grid.arrange` function.
+While ggplot2 is excellent for creating individual visualisations, we often need to combine multiple independent plots into a single composite graphic. The {patchwork} package is designed to make this process incredibly simple by treating ggplot objects as mathematical elements that can be added together.
 
-```{R libr10, echo = FALSE, purl = TRUE, message=FALSE, warning=FALSE}
+The power of {patchwork} lies in its operator-based syntax:
+
+-   \| or + : Places plots side-by-side.
+
+-   / : Stacks plots vertically.
+
+-   () : Groups plots together to create complex, nested layouts.
+
+Find out more about {patchwork} [here](https://patchwork.data-imaginist.com/articles/patchwork.html) and see some examples that utilise {patchwork} in the [R Graphics Library](https://warp-view-cloud.gsk.com/STAR/graphics-library/).
+
+```{R libr10, echo = FALSE, purl = TRUE, message=FALSE}
 library(ggplot2)
 library(tidyverse)
 library(haven)
-library(gridExtra, warn.conflicts = FALSE)
-library(readr)
 
 pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
              TIME = rep(c(0, 1, 6, 12, 24), 2), 
@@ -17,26 +25,36 @@ pk <- tibble(SUBJID = as.character(rep(1:2, each = 5)),
 
 subj1 <- pk |>
     filter(SUBJID == 1)
-act_full <- read_sas("data/actFull.sas7bdat")
-theoph <- read_csv("data/theoph.csv")
+act_full <- read_sas("data/actFull.sas7bdat") 
+
 ```
 
 ```{R grid.arrange}
 # Create two plots
 act_bl <- act_full |>
-         filter(VISITNUM == 40)
+  filter(VISITNUM == 40)
 
-base_info <- ggplot(data = act_bl,
-                    aes(y = ACTTOT)) +
+base_info <- ggplot(data = act_bl, aes(y = ACTTOT)) +
   theme(legend.position = "bottom")
-plot1 <- base_info + geom_boxplot(aes(x = SEX, fill = ARM)) 
-plot2 <- base_info + geom_point(aes(x = WEIGHT, colour = ARM))
 
-# Arrange side by side
-library(gridExtra)
-grid.arrange(plot1, plot2, ncol = 2)
+plot1 <- base_info +
+  geom_boxplot(aes(x = SEX, fill = ARM))  +
+  labs(fill = "ARM") # Modify legend label
+plot2 <- base_info +
+  geom_point(aes(x = WEIGHT, colour = ARM)) +
+  labs(colour = "ARM") # Modify legend label
 
+# Arrange side by side using patchwork syntax
+library(patchwork)
+
+# The '|' operator places plots side-by-side
+plot1 | plot2
+
+# collect the axis titles
+(plot1 | plot2) +
+  plot_layout(axis_titles = "collect")
 ```
+
 
 ## The {docorator} package
 
